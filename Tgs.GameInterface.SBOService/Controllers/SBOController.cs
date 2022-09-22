@@ -193,7 +193,7 @@ public class SBOController : ControllerBase
     ///             "companyKey": "56E0854E61C3468580E491C38405580B",
     ///             "agent": "STAG_GPI",
     ///             "username": "4ucmqplxb029",
-    ///             "lang": "cn",
+    ///             "lang": "zh-cn",
     ///             "isMobile": false
     ///         }
     /// </remarks>
@@ -237,7 +237,7 @@ public class SBOController : ControllerBase
     ///             "companyKey": "56E0854E61C3468580E491C38405580B",
     ///             "agent": "STAG_GPI",
     ///             "username": "4ucmqplxb029",
-    ///             "lang": "cn"
+    ///             "lang": "zh-cn"
     ///         }
     /// </remarks>
     [HttpPost("game/url/virtualsports", Name = "GameUrlByVirtualSports")]
