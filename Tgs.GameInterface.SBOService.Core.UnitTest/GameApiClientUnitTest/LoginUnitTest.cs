@@ -22,7 +22,7 @@ public class LoginUnitTest
                 .Expect(HttpMethod.Post, url.ToString())
                 .Respond(
                     HttpStatusCode.OK,
-                    new StringContent("{\"url\":\"sports-test.mydomain.com/welcome2.aspx?token=15433.sWRjsIETIDMjlZVTnzdQMNpV\",\"serverId\":\"YY-demoanduat\",\"error\":{\"id\":0,\"msg\":\"No Error\"}}"));
+                    new StringContent("{\"url\":\"//virtualsports-winfast888.1StepRich.com/Home/Welcome?gmOnlineId=3458478272&token=8722482.GWxHdvRGmvuwyLRiuBoLDOR\",\"serverId\":\"YY-demoanduat\",\"error\":{\"id\":0,\"msg\":\"No Error\"}}"));
 
         var fakeLog = NullLogger<GameApiClient>.Instance;
         var fakeHttpClient = handler.ToHttpClient();

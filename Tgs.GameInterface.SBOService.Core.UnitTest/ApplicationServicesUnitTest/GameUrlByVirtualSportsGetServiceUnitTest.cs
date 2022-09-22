@@ -22,7 +22,7 @@ public class GameUrlByVirtualSportsGetServiceUnitTest
         var response = new LoginResponse()
         {
             IsPlayerExist = true,
-            GameUrl = "sports-test.mydomain.com/welcome2.aspx?token=15433.sWRjsIETIDMjlZVTnzdQMNpV"
+            GameUrl = "//sports-test.mydomain.com/welcome2.aspx?token=15433.sWRjsIETIDMjlZVTnzdQMNpV"
         };
 
         _ = fakeGameApiClient
@@ -42,6 +42,6 @@ public class GameUrlByVirtualSportsGetServiceUnitTest
 
         Assert.IsNotNull(actual);
         Assert.IsTrue(actual.IsPlayerExist);
-        Assert.AreEqual($"https://{response.GameUrl}&lang={query.Lang}", actual.GameUrl);
+        Assert.AreEqual($"https:{response.GameUrl}&lang={query.Lang}", actual.GameUrl);
     }
 }
