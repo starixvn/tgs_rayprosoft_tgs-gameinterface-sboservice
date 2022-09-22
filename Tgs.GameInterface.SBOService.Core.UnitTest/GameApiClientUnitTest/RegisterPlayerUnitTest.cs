@@ -12,9 +12,9 @@ public class RegisterPlayerUnitTest
     public async Task Normal_Process()
     {
         var apiUrl = new Uri("https://ex-api-demo-yy.568win.com/");
-        var companyKey = "56E0854E61C3468580E491C38405580B";
-        var username = "4ucmqplxb029";
-        var agent = "STAG_GPI";
+        var companyKey = "49ED28A987624CA0A3F834C3B8A69AAB";
+        var username = "4ucmqplxkuyd";
+        var agent = "STAG_GPI_CNY";
 
         var url = new Uri(apiUrl, "/web-root/restricted/player/register-player.aspx");
 
@@ -45,9 +45,9 @@ public class RegisterPlayerUnitTest
     public async Task Agent_Does_Not_Exist()
     {
         var apiUrl = new Uri("https://ex-api-demo-yy.568win.com/");
-        var companyKey = "56E0854E61C3468580E491C38405580B";
-        var username = "4ucmqplxb029";
-        var agent = "STAG_GPI";
+        var companyKey = "49ED28A987624CA0A3F834C3B8A69AAB";
+        var username = "4ucmqplxkuyd";
+        var agent = "STAG_GPI_CNY";
 
         var url = new Uri(apiUrl, "/web-root/restricted/player/register-player.aspx");
 
@@ -81,9 +81,9 @@ public class RegisterPlayerUnitTest
     public async Task Player_Already_Exists()
     {
         var apiUrl = new Uri("https://ex-api-demo-yy.568win.com/");
-        var companyKey = "56E0854E61C3468580E491C38405580B";
-        var username = "4ucmqplxb029";
-        var agent = "STAG_GPI";
+        var companyKey = "49ED28A987624CA0A3F834C3B8A69AAB";
+        var username = "4ucmqplxkuyd";
+        var agent = "STAG_GPI_CNY";
 
         var url = new Uri(apiUrl, "/web-root/restricted/player/register-player.aspx");
 

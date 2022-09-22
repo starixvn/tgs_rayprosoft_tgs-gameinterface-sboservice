@@ -11,8 +11,8 @@ public class RegisterAgentUnitTest
     public async Task Normal_Process()
     {
         var apiUrl = new Uri("https://ex-api-demo-yy.568win.com/");
-        var companyKey = "56E0854E61C3468580E491C38405580B";
-        var username = "STAG_GPI";
+        var companyKey = "49ED28A987624CA0A3F834C3B8A69AAB";
+        var username = "STAG_GPI_CNY";
         var currency = "CNY";
         var min = 1;
         var max = 5000;

@@ -13,9 +13,9 @@ public class PlayerKickCommandServiceUnitTest
 
         var command = new PlayerKickCommand(
             new Uri("https://ex-api-demo-yy.568win.com/"),
-            "56E0854E61C3468580E491C38405580B",
-            "STAG_GPI",
-            "4ucmqplxb029");
+            "49ED28A987624CA0A3F834C3B8A69AAB",
+            "STAG_GPI_CNY",
+            "4ucmqplxkuyd");
 
         _ = fakeGameApiClient
                 .LogoutAsync(

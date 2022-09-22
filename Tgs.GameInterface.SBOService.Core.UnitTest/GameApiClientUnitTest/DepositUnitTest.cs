@@ -11,8 +11,8 @@ public class DepositUnitTest
     public async Task Normal_Process()
     {
         var apiUrl = new Uri("https://ex-api-demo-yy.568win.com/");
-        var companyKey = "56E0854E61C3468580E491C38405580B";
-        var username = "4ucmqplxb029";
+        var companyKey = "49ED28A987624CA0A3F834C3B8A69AAB";
+        var username = "4ucmqplxkuyd";
         var txnId = Guid.NewGuid().ToString("N");
         var amount = 1m;
 

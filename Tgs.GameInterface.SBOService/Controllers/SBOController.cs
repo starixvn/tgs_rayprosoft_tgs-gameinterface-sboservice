@@ -23,8 +23,8 @@ public class SBOController : ControllerBase
     ///
     ///         {
     ///             "apiUrl": "https://ex-api-demo-yy.568win.com",
-    ///             "companyKey": "56E0854E61C3468580E491C38405580B",
-    ///             "username": "STAG_GPI",
+    ///             "companyKey": "49ED28A987624CA0A3F834C3B8A69AAB",
+    ///             "username": "STAG_GPI_CNY",
     ///             "currency": "CNY",
     ///             "min": 1,
     ///             "max": 5000,
@@ -67,9 +67,9 @@ public class SBOController : ControllerBase
     ///
     ///         {
     ///             "apiUrl": "https://ex-api-demo-yy.568win.com",
-    ///             "companyKey": "56E0854E61C3468580E491C38405580B",
-    ///             "agent": "STAG_GPI",
-    ///             "username": "4ucmqplxb029",
+    ///             "companyKey": "49ED28A987624CA0A3F834C3B8A69AAB",
+    ///             "agent": "STAG_GPI_CNY",
+    ///             "username": "4ucmqplxkuyd",
     ///             "amount": 1
     ///         }
     /// </remarks>
@@ -111,9 +111,9 @@ public class SBOController : ControllerBase
     ///
     ///         {
     ///             "apiUrl": "https://ex-api-demo-yy.568win.com",
-    ///             "companyKey": "56E0854E61C3468580E491C38405580B",
-    ///             "agent": "STAG_GPI",
-    ///             "username": "4ucmqplxb029",
+    ///             "companyKey": "49ED28A987624CA0A3F834C3B8A69AAB",
+    ///             "agent": "STAG_GPI_CNY",
+    ///             "username": "4ucmqplxkuyd",
     ///             "amount": 1
     ///         }
     /// </remarks>
@@ -155,7 +155,7 @@ public class SBOController : ControllerBase
     ///
     ///         {
     ///             "apiUrl": "https://ex-api-demo-yy.568win.com",
-    ///             "companyKey": "56E0854E61C3468580E491C38405580B",
+    ///             "companyKey": "49ED28A987624CA0A3F834C3B8A69AAB",
     ///             "txnId": "3076969062631477248"
     ///         }
     /// </remarks>
@@ -190,9 +190,9 @@ public class SBOController : ControllerBase
     ///
     ///         {
     ///             "apiUrl": "https://ex-api-demo-yy.568win.com",
-    ///             "companyKey": "56E0854E61C3468580E491C38405580B",
-    ///             "agent": "STAG_GPI",
-    ///             "username": "4ucmqplxb029",
+    ///             "companyKey": "49ED28A987624CA0A3F834C3B8A69AAB",
+    ///             "agent": "STAG_GPI_CNY",
+    ///             "username": "4ucmqplxkuyd",
     ///             "lang": "zh-cn",
     ///             "isMobile": false
     ///         }
@@ -234,9 +234,9 @@ public class SBOController : ControllerBase
     ///
     ///         {
     ///             "apiUrl": "https://ex-api-demo-yy.568win.com",
-    ///             "companyKey": "56E0854E61C3468580E491C38405580B",
-    ///             "agent": "STAG_GPI",
-    ///             "username": "4ucmqplxb029",
+    ///             "companyKey": "49ED28A987624CA0A3F834C3B8A69AAB",
+    ///             "agent": "STAG_GPI_CNY",
+    ///             "username": "4ucmqplxkuyd",
     ///             "lang": "zh-cn"
     ///         }
     /// </remarks>
@@ -276,9 +276,9 @@ public class SBOController : ControllerBase
     ///
     ///         {
     ///             "apiUrl": "https://ex-api-demo-yy.568win.com",
-    ///             "companyKey": "56E0854E61C3468580E491C38405580B",
-    ///             "agent": "STAG_GPI",
-    ///             "username": "4ucmqplxb029"
+    ///             "companyKey": "49ED28A987624CA0A3F834C3B8A69AAB",
+    ///             "agent": "STAG_GPI_CNY",
+    ///             "username": "4ucmqplxkuyd"
     ///         }
     /// </remarks>
     [HttpPost("player/create", Name = "PlayerCreate")]
@@ -307,9 +307,9 @@ public class SBOController : ControllerBase
     ///
     ///         {
     ///             "apiUrl": "https://ex-api-demo-yy.568win.com",
-    ///             "companyKey": "56E0854E61C3468580E491C38405580B",
-    ///             "agent": "STAG_GPI",
-    ///             "username": "4ucmqplxb029"
+    ///             "companyKey": "49ED28A987624CA0A3F834C3B8A69AAB",
+    ///             "agent": "STAG_GPI_CNY",
+    ///             "username": "4ucmqplxkuyd"
     ///         }
     /// </remarks>
     [HttpPost("player/balance", Name = "PlayerBalance")]
@@ -347,9 +347,9 @@ public class SBOController : ControllerBase
     ///
     ///         {
     ///             "apiUrl": "https://ex-api-demo-yy.568win.com",
-    ///             "companyKey": "56E0854E61C3468580E491C38405580B",
-    ///             "agent": "STAG_GPI",
-    ///             "username": "4ucmqplxb029"
+    ///             "companyKey": "49ED28A987624CA0A3F834C3B8A69AAB",
+    ///             "agent": "STAG_GPI_CNY",
+    ///             "username": "4ucmqplxkuyd"
     ///         }
     /// </remarks>
     [HttpPost("player/kick", Name = "PlayerKick")]
