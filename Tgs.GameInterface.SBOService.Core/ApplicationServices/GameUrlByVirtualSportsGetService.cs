@@ -32,6 +32,6 @@ internal class GameUrlByVirtualSportsGetService : IGetService<GameUrlByVirtualSp
                 GameUrl: string.Empty)
             : new GameUrlResult(
             IsPlayerExist: true,
-            GameUrl: $"https://{response.GameUrl}&lang={query.Lang}");
+            GameUrl: $"https:{response.GameUrl}&lang={query.Lang}");
     }
 }

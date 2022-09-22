@@ -38,6 +38,6 @@ internal class GameUrlBySportsBookGetService : IGetService<GameUrlBySportsBookQu
 
         return new GameUrlResult(
             IsPlayerExist: true,
-            GameUrl: $"https://{response.GameUrl}&lang={query.Lang}&oddstyle={query.Oddstyle}&theme={query.Theme}&oddsmode={query.Oddstyle}&device={device}");
+            GameUrl: $"https:{response.GameUrl}&lang={query.Lang}&oddstyle={query.Oddstyle}&theme={query.Theme}&oddsmode={query.Oddstyle}&device={device}");
     }
 }
