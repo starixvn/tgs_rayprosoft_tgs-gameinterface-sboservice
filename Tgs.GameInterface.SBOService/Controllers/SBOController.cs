@@ -1,4 +1,3 @@
-using System;
 using Microsoft.AspNetCore.Mvc;
 using Tgs.GameInterface.SBOService.Core.ApplicationServices;
 using Tgs.GameInterface.SBOService.Core.Models;
@@ -310,7 +309,6 @@ public class SBOController : ControllerBase
 
         foreach (var gameHistoryResult in gameHistoryResults)
         {
-
             yield return new GameHistoryResultViewModel(
                 gameHistoryResult.PlayerCode,
                 gameHistoryResult.ExternalRoundId,
@@ -372,7 +370,6 @@ public class SBOController : ControllerBase
 
         foreach (var gameHistoryResult in gameHistoryResults)
         {
-
             yield return new GameHistoryResultViewModel(
                 gameHistoryResult.PlayerCode,
                 gameHistoryResult.ExternalRoundId,

@@ -1,10 +1,8 @@
 ﻿using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
-using OpenTelemetry.Resources;
 using Tgs.GameInterface.SBOService.Core.ApplicationServices;
 using Tgs.GameInterface.SBOService.Core.Models;
 using Tgs.GameInterface.SBOService.Protos;
-using Tgs.GameInterface.SBOService.ViewModels;
 using Tgs.ServiceUtility;
 using Enum = System.Enum;
 
@@ -172,7 +170,6 @@ public class GameInterfaceSBOGrpcService : GameInterfaceSBOService.GameInterface
         {
             foreach (var gameHistoryResult in gameHistoryResults)
             {
-
                 reply.Items.Add(new GameHistoryInfo()
                 {
                     PlayerCode = gameHistoryResult.PlayerCode,
@@ -192,6 +189,7 @@ public class GameInterfaceSBOGrpcService : GameInterfaceSBOService.GameInterface
         }
         return reply;
     }
+
     public override async Task<GameHistoryReply> GameHistoryByVirtualSports(
         GameHistoryRequest request,
         ServerCallContext context)
@@ -216,7 +214,6 @@ public class GameInterfaceSBOGrpcService : GameInterfaceSBOService.GameInterface
         {
             foreach (var gameHistoryResult in gameHistoryResults)
             {
-
                 reply.Items.Add(new GameHistoryInfo()
                 {
                     PlayerCode = gameHistoryResult.PlayerCode,

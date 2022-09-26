@@ -146,6 +146,7 @@ internal class GameInterfaceSBOClient : IGameInterfaceSBOClient
             yield return item;
         }
     }
+
     public async IAsyncEnumerable<GameHistoryInfo> GameHistoryByVirtualSportsAsync(
         Uri apiUrl,
         string companyKey,

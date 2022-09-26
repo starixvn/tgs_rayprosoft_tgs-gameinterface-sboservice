@@ -14,5 +14,4 @@ public record GameHistoryViewModel
     public DateTime StartTime { get; init; }
     [Required]
     public DateTime EndTime { get; init; }
-
 }

@@ -31,15 +31,15 @@ internal class GameHistoryByVirtualSportsQueryService : IQueryService<GameHistor
 
         /*
          * 您好，请见以下分类，谢谢您。
-         * 
+         *
          * 未结算：
          *  running
-         * 
+         *
          * 已结算：
          *  draw
          *  lose
          *  won
-         *  
+         *
          * 作废：
          *  void
          */
