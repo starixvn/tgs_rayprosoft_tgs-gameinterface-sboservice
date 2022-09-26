@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Tgs.GameInterface.SBOService.Core.ApplicationServices;
 using Tgs.GameInterface.SBOService.Core.Models;
+using Tgs.GameInterface.SBOService.Protos;
 using Tgs.GameInterface.SBOService.ViewModels;
 using Tgs.ServiceUtility;
 
@@ -261,6 +262,128 @@ public class SBOController : ControllerBase
         return new GameUrlResultViewModel(
             result.IsPlayerExist,
             result.GameUrl);
+    }
+
+    /// <summary>
+    /// Games the history by sports book asynchronous.
+    /// </summary>
+    /// <param name="service">The service.</param>
+    /// <param name="source">The source.</param>
+    /// <returns></returns>
+    /// <remarks>
+    /// <b>Example</b><br />
+    ///
+    ///     Post
+    ///
+    ///         {
+    ///             "apiUrl": "https://ex-api-demo-yy.568win.com",
+    ///             "companyKey": "49ED28A987624CA0A3F834C3B8A69AAB",
+    ///             "agent": "STAG_GPI_CNY",
+    ///             "startTime": "2022-09-22T17:00:00+08:00",
+    ///             "endTime": "2022-09-22T17:30:00+08:00"
+    ///         }
+    /// </remarks>
+    [HttpPost("game/history/sportsbook", Name = "GameHistoryBySportsBook")]
+    public async IAsyncEnumerable<GameHistoryResultViewModel> GameHistoryBySportsBookAsync(
+        [FromServices] IQueryService<GameHistoryBySportsBookQuery, GameHistoryResult> service,
+        GameHistoryViewModel source)
+    {
+        var query = new GameHistoryBySportsBookQuery(
+            source.ApiUrl,
+            source.CompanyKey,
+            source.Agent,
+            source.StartTime,
+            source.EndTime);
+
+        var gameHistoryResults = await service
+                 .QueryAsync(
+                     query: query,
+                     cancellationToken: HttpContext.RequestAborted)
+                 .ToArrayAsync()
+                 .ConfigureAwait(false);
+
+        if (!gameHistoryResults.Any())
+        {
+            yield break;
+        }
+
+        foreach (var gameHistoryResult in gameHistoryResults)
+        {
+            yield return new GameHistoryResultViewModel(
+                gameHistoryResult.PlayerCode,
+                gameHistoryResult.ExternalRoundId,
+                gameHistoryResult.ExternalGameId,
+                (GameHistoryStatus)Enum.Parse(typeof(GameHistoryStatus), gameHistoryResult.Status, true),
+                gameHistoryResult.ExternalCreatedOn,
+                gameHistoryResult.ExternalClosedOn,
+                gameHistoryResult.Bet,
+                gameHistoryResult.ValidBet,
+                gameHistoryResult.PlayerWinLoss,
+                gameHistoryResult.Turnover,
+                gameHistoryResult.Settle,
+                gameHistoryResult.AdditionalData);
+        }
+    }
+
+    /// <summary>
+    /// Games the history by virtual sports asynchronous.
+    /// </summary>
+    /// <param name="service">The service.</param>
+    /// <param name="source">The source.</param>
+    /// <returns></returns>
+    /// <remarks>
+    /// <b>Example</b><br />
+    ///
+    ///     Post
+    ///
+    ///         {
+    ///             "apiUrl": "https://ex-api-demo-yy.568win.com",
+    ///             "companyKey": "49ED28A987624CA0A3F834C3B8A69AAB",
+    ///             "agent": "STAG_GPI_CNY",
+    ///             "startTime": "2022-09-22T16:30:00+08:00",
+    ///             "endTime": "2022-09-22T17:00:00+08:00"
+    ///         }
+    /// </remarks>
+    [HttpPost("game/history/virtualsports", Name = "GameHistoryByVirtualSports")]
+    public async IAsyncEnumerable<GameHistoryResultViewModel> GameHistoryByVirtualSportsAsync(
+        [FromServices] IQueryService<GameHistoryByVirtualSportsQuery, GameHistoryResult> service,
+        GameHistoryViewModel source)
+    {
+        var query = new GameHistoryByVirtualSportsQuery(
+            source.ApiUrl,
+            source.CompanyKey,
+            source.Agent,
+            source.StartTime,
+            source.EndTime);
+
+        var gameHistoryResults = await service
+                 .QueryAsync(
+                     query: query,
+                     cancellationToken: HttpContext.RequestAborted)
+                 .ToArrayAsync()
+                 .ConfigureAwait(false);
+
+        if (!gameHistoryResults.Any())
+        {
+            yield break;
+        }
+
+        foreach (var gameHistoryResult in gameHistoryResults)
+        {
+            yield return new GameHistoryResultViewModel(
+                gameHistoryResult.PlayerCode,
+                gameHistoryResult.ExternalRoundId,
+                gameHistoryResult.ExternalGameId,
+                (GameHistoryStatus)Enum.Parse(typeof(GameHistoryStatus), gameHistoryResult.Status, true),
+                gameHistoryResult.ExternalCreatedOn,
+                gameHistoryResult.ExternalClosedOn,
+                gameHistoryResult.Bet,
+                gameHistoryResult.ValidBet,
+                gameHistoryResult.PlayerWinLoss,
+                gameHistoryResult.Turnover,
+                gameHistoryResult.Settle,
+                gameHistoryResult.AdditionalData);
+        }
     }
 
     /// <summary>

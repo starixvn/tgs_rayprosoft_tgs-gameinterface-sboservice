@@ -74,11 +74,33 @@ public interface IGameApiClient
         string username,
         CancellationToken cancellationToken = default);
 
-    IAsyncEnumerable<BetTransactionResponse> GetBetListByModifyDateAsync(
+    IAsyncEnumerable<BetSportsBookResponse> GetBetListByModifyDateAgentBySportsBookAsync(
         Uri apiUrl,
         string companyKey,
-        string portfolio,
-        DateTime startDate,
-        DateTime endDate,
+        string agent,
+        DateTime startTime,
+        DateTime endTime,
+        CancellationToken cancellationToken = default);
+
+    IAsyncEnumerable<BetSportsBookResponse> GetBetListByModifyDateBySportsBookAsync(
+        Uri apiUrl,
+        string companyKey,
+        DateTime startTime,
+        DateTime endTime,
+        CancellationToken cancellationToken = default);
+
+    IAsyncEnumerable<BetVirtualSportsResponse> GetBetListByModifyDateByVirtualSportsAsync(
+        Uri apiUrl,
+        string companyKey,
+        DateTime startTime,
+        DateTime endTime,
+        CancellationToken cancellationToken = default);
+
+    IAsyncEnumerable<BetVirtualSportsResponse> GetBetListByModifyDateAgentByVirtualSportsAsync(
+        Uri apiUrl,
+        string companyKey,
+        string agent,
+        DateTime startTime,
+        DateTime endTime,
         CancellationToken cancellationToken = default);
 }

@@ -74,4 +74,20 @@ public interface IGameInterfaceSBOClient
         string agent,
         string username,
         CancellationToken cancellationToken = default);
+
+    IAsyncEnumerable<GameHistoryInfo> GameHistoryBySportsBookAsync(
+        Uri apiUrl,
+        string companyKey,
+        string agent,
+        DateTime startTime,
+        DateTime endTime,
+        CancellationToken cancellationToken = default);
+
+    IAsyncEnumerable<GameHistoryInfo> GameHistoryByVirtualSportsAsync(
+        Uri apiUrl,
+        string companyKey,
+        string agent,
+        DateTime startTime,
+        DateTime endTime,
+        CancellationToken cancellationToken = default);
 }

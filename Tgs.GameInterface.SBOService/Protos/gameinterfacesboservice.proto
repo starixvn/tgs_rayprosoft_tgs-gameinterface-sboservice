@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 import "phoenix/protobuf/decimal.proto";
+import "google/protobuf/timestamp.proto";
 
 option csharp_namespace = "Tgs.GameInterface.SBOService.Protos";
 
@@ -18,6 +19,8 @@ service GameInterfaceSBOService {
   rpc FundStatus(FundStatusRequest) returns (FundStatusReply);
   rpc GameUrlBySportsBook (GameUrlBySportsBookRequest) returns (GameUrlReply);
   rpc GameUrlByVirtualSports (GameUrlByVirtualSportsRequest) returns (GameUrlReply);
+  rpc GameHistoryBySportsBook (GameHistoryRequest) returns (GameHistoryReply);
+  rpc GameHistoryByVirtualSports  (GameHistoryRequest) returns (GameHistoryReply);
 }
 
 // The request message containing the user's name.
@@ -84,6 +87,14 @@ message GameUrlByVirtualSportsRequest {
 	string lang = 5;
 }
 
+message GameHistoryRequest {
+	string api_url = 1;
+	string company_key = 2;
+	string agent = 3;
+	google.protobuf.Timestamp start_time = 4; 
+	google.protobuf.Timestamp end_time = 5;
+}
+
 // The response message containing the greetings.
 message BaseReply{
 	bool status = 1;
@@ -107,4 +118,33 @@ message FundStatusReply {
 message GameUrlReply {
 	bool is_player_exist = 1;
 	string game_url = 2;
+}
+
+message GameHistoryReply {
+	repeated GameHistoryInfo items = 1;
+}
+
+message GameHistoryInfo {
+	string player_code = 1;
+	string external_round_id = 2;
+    string external_game_id = 3;
+	GameHistoryStatus status = 4;
+	google.protobuf.Timestamp external_created_on = 5;
+	google.protobuf.Timestamp external_closed_on = 6;
+	phoenix.protobuf.DecimalValue bet = 7;
+	phoenix.protobuf.DecimalValue valid_bet = 8;
+	phoenix.protobuf.DecimalValue player_win_loss = 9;
+	phoenix.protobuf.DecimalValue turnover = 10;
+	phoenix.protobuf.DecimalValue settle = 11;
+	string additional_data = 12;
+}
+
+
+enum GameHistoryStatus{
+	GAME_HISTORY_STATUS_UNKNOWN = 0;
+	GAME_HISTORY_STATUS_RUNNING = 1;
+	GAME_HISTORY_STATUS_VOID = 2;
+	GAME_HISTORY_STATUS_WON = 3;
+	GAME_HISTORY_STATUS_LOSE = 4;
+	GAME_HISTORY_STATUS_DRAW = 5;
 }
