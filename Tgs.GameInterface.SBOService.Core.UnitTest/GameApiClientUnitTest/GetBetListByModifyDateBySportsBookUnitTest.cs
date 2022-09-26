@@ -12,8 +12,8 @@ public class GetBetListByModifyDateBySportsBookUnitTest
     {
         var apiUrl = new Uri("https://ex-api-demo-yy.568win.com/");
         var companyKey = "49ED28A987624CA0A3F834C3B8A69AAB";
-        var startDate = DateTime.Parse("2022-09-22 16:30:00 +08:00");
-        var endDate = DateTime.Parse("2022-09-22 17:00:00 +08:00");
+        var startTime = DateTime.Parse("2022-09-22 16:30:00 +08:00");
+        var endTime = DateTime.Parse("2022-09-22 17:00:00 +08:00");
 
         var url = new Uri(apiUrl, "/web-root/restricted/report/v2/get-bet-list-by-modify-date.aspx");
 
@@ -35,8 +35,8 @@ public class GetBetListByModifyDateBySportsBookUnitTest
                   .GetBetListByModifyDateBySportsBookAsync(
                       apiUrl,
                       companyKey,
-                      startDate,
-                      endDate)
+                      startTime,
+                      endTime)
                  .ToArrayAsync()
                  .ConfigureAwait(false);
 
@@ -49,8 +49,8 @@ public class GetBetListByModifyDateBySportsBookUnitTest
     {
         var apiUrl = new Uri("https://ex-api-demo-yy.568win.com/");
         var companyKey = "49ED28A987624CA0A3F834C3B8A69AAB";
-        var startDate = DateTime.Parse("2022-09-22 17:02:00 +08:00");
-        var endDate = DateTime.Parse("2022-09-22 17:04:00 +08:00");
+        var startTime = DateTime.Parse("2022-09-22 17:02:00 +08:00");
+        var endTime = DateTime.Parse("2022-09-22 17:04:00 +08:00");
 
         var url = new Uri(apiUrl, "/web-root/restricted/report/v2/get-bet-list-by-modify-date.aspx");
 
@@ -72,8 +72,8 @@ public class GetBetListByModifyDateBySportsBookUnitTest
                   .GetBetListByModifyDateBySportsBookAsync(
                       apiUrl,
                       companyKey,
-                      startDate,
-                      endDate)
+                      startTime,
+                      endTime)
                  .ToArrayAsync()
                  .ConfigureAwait(false);
 

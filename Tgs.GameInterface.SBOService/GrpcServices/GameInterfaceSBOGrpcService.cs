@@ -1,8 +1,12 @@
-﻿using Grpc.Core;
+﻿using Google.Protobuf.WellKnownTypes;
+using Grpc.Core;
+using OpenTelemetry.Resources;
 using Tgs.GameInterface.SBOService.Core.ApplicationServices;
 using Tgs.GameInterface.SBOService.Core.Models;
 using Tgs.GameInterface.SBOService.Protos;
+using Tgs.GameInterface.SBOService.ViewModels;
 using Tgs.ServiceUtility;
+using Enum = System.Enum;
 
 namespace Tgs.GameInterface.SBOService.GrpcServices;
 
@@ -14,6 +18,8 @@ public class GameInterfaceSBOGrpcService : GameInterfaceSBOService.GameInterface
     private readonly IGetService<FundStatusQuery, bool> _fundStatusService;
     private readonly IGetService<GameUrlBySportsBookQuery, GameUrlResult> _gameUrlBySportsBookService;
     private readonly IGetService<GameUrlByVirtualSportsQuery, GameUrlResult> _gameUrlByVirtualSportsService;
+    private readonly IQueryService<GameHistoryBySportsBookQuery, GameHistoryResult> _gameHistoryBySportsBookService;
+    private readonly IQueryService<GameHistoryByVirtualSportsQuery, GameHistoryResult> _gameHistoryByVirtualSportsService;
     private readonly IGetService<PlayerBalanceQuery, PlayerBalanceResult> _playerBalanceService;
     private readonly ICommandService<PlayerCreateCommand> _playerCreateService;
     private readonly ICommandService<PlayerKickCommand> _playerKickService;
@@ -25,6 +31,8 @@ public class GameInterfaceSBOGrpcService : GameInterfaceSBOService.GameInterface
         IGetService<FundStatusQuery, bool> fundStatusService,
         IGetService<GameUrlBySportsBookQuery, GameUrlResult> gameUrlBySportsBookService,
         IGetService<GameUrlByVirtualSportsQuery, GameUrlResult> gameUrlByVirtualSportsService,
+        IQueryService<GameHistoryBySportsBookQuery, GameHistoryResult> gameHistoryBySportsBookService,
+        IQueryService<GameHistoryByVirtualSportsQuery, GameHistoryResult> gameHistoryByVirtualSportsService,
         IGetService<PlayerBalanceQuery, PlayerBalanceResult> playerBalanceService,
         ICommandService<PlayerCreateCommand> playerCreateService,
         ICommandService<PlayerKickCommand> playerKickService
@@ -36,6 +44,8 @@ public class GameInterfaceSBOGrpcService : GameInterfaceSBOService.GameInterface
         _fundStatusService = fundStatusService ?? throw new ArgumentNullException(nameof(fundStatusService));
         _gameUrlBySportsBookService = gameUrlBySportsBookService ?? throw new ArgumentNullException(nameof(gameUrlBySportsBookService));
         _gameUrlByVirtualSportsService = gameUrlByVirtualSportsService ?? throw new ArgumentNullException(nameof(gameUrlByVirtualSportsService));
+        _gameHistoryBySportsBookService = gameHistoryBySportsBookService ?? throw new ArgumentNullException(nameof(gameHistoryBySportsBookService));
+        _gameHistoryByVirtualSportsService = gameHistoryByVirtualSportsService ?? throw new ArgumentNullException(nameof(gameHistoryByVirtualSportsService));
         _playerBalanceService = playerBalanceService ?? throw new ArgumentNullException(nameof(playerBalanceService));
         _playerCreateService = playerCreateService ?? throw new ArgumentNullException(nameof(playerCreateService));
         _playerKickService = playerKickService ?? throw new ArgumentNullException(nameof(playerKickService));
@@ -136,6 +146,95 @@ public class GameInterfaceSBOGrpcService : GameInterfaceSBOService.GameInterface
         {
             IsOrderExist = result
         };
+    }
+
+    public override async Task<GameHistoryReply> GameHistoryBySportsBook(
+        GameHistoryRequest request,
+        ServerCallContext context)
+    {
+        var query = new GameHistoryBySportsBookQuery(
+            new(request.ApiUrl),
+            request.CompanyKey,
+            request.Agent,
+            request.StartTime.ToDateTime(),
+            request.EndTime.ToDateTime());
+
+        var gameHistoryResults = await _gameHistoryBySportsBookService
+                 .QueryAsync(
+                     query: query,
+                     cancellationToken: context.CancellationToken)
+                 .ToArrayAsync()
+                 .ConfigureAwait(false);
+
+        var reply = new GameHistoryReply();
+
+        if (gameHistoryResults.Any())
+        {
+            foreach (var gameHistoryResult in gameHistoryResults)
+            {
+
+                reply.Items.Add(new GameHistoryInfo()
+                {
+                    PlayerCode = gameHistoryResult.PlayerCode,
+                    ExternalRoundId = gameHistoryResult.ExternalRoundId,
+                    ExternalGameId = gameHistoryResult.ExternalGameId,
+                    Status = (GameHistoryStatus)Enum.Parse(typeof(GameHistoryStatus), gameHistoryResult.Status, true),
+                    ExternalCreatedOn = gameHistoryResult.ExternalCreatedOn.ToTimestamp(),
+                    ExternalClosedOn = gameHistoryResult.ExternalClosedOn.ToTimestamp(),
+                    Bet = gameHistoryResult.Bet,
+                    ValidBet = gameHistoryResult.ValidBet,
+                    PlayerWinLoss = gameHistoryResult.PlayerWinLoss,
+                    Turnover = gameHistoryResult.Turnover,
+                    Settle = gameHistoryResult.Settle,
+                    AdditionalData = gameHistoryResult.AdditionalData
+                });
+            }
+        }
+        return reply;
+    }
+    public override async Task<GameHistoryReply> GameHistoryByVirtualSports(
+        GameHistoryRequest request,
+        ServerCallContext context)
+    {
+        var query = new GameHistoryByVirtualSportsQuery(
+            new(request.ApiUrl),
+            request.CompanyKey,
+            request.Agent,
+            request.StartTime.ToDateTime(),
+            request.EndTime.ToDateTime());
+
+        var gameHistoryResults = await _gameHistoryByVirtualSportsService
+                 .QueryAsync(
+                     query: query,
+                     cancellationToken: context.CancellationToken)
+                 .ToArrayAsync()
+                 .ConfigureAwait(false);
+
+        var reply = new GameHistoryReply();
+
+        if (gameHistoryResults.Any())
+        {
+            foreach (var gameHistoryResult in gameHistoryResults)
+            {
+
+                reply.Items.Add(new GameHistoryInfo()
+                {
+                    PlayerCode = gameHistoryResult.PlayerCode,
+                    ExternalRoundId = gameHistoryResult.ExternalRoundId,
+                    ExternalGameId = gameHistoryResult.ExternalGameId,
+                    Status = (GameHistoryStatus)Enum.Parse(typeof(GameHistoryStatus), gameHistoryResult.Status, true),
+                    ExternalCreatedOn = gameHistoryResult.ExternalCreatedOn.ToTimestamp(),
+                    ExternalClosedOn = gameHistoryResult.ExternalClosedOn.ToTimestamp(),
+                    Bet = gameHistoryResult.Bet,
+                    ValidBet = gameHistoryResult.ValidBet,
+                    PlayerWinLoss = gameHistoryResult.PlayerWinLoss,
+                    Turnover = gameHistoryResult.Turnover,
+                    Settle = gameHistoryResult.Settle,
+                    AdditionalData = gameHistoryResult.AdditionalData
+                });
+            }
+        }
+        return reply;
     }
 
     public override async Task<GameUrlReply> GameUrlBySportsBook(

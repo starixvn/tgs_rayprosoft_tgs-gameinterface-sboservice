@@ -1,4 +1,6 @@
-﻿using Tgs.GameInterface.SBOService.Protos;
+﻿using System.Runtime.CompilerServices;
+using Google.Protobuf.WellKnownTypes;
+using Tgs.GameInterface.SBOService.Protos;
 
 namespace Tgs.GameInterface.SBOService.Client;
 
@@ -109,6 +111,73 @@ internal class GameInterfaceSBOClient : IGameInterfaceSBOClient
                 .ConfigureAwait(false);
 
         return reply.IsOrderExist;
+    }
+
+    public async IAsyncEnumerable<GameHistoryInfo> GameHistoryBySportsBookAsync(
+        Uri apiUrl,
+        string companyKey,
+        string agent,
+        DateTime startTime,
+        DateTime endTime,
+        [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    {
+        var request = new GameHistoryRequest()
+        {
+            ApiUrl = apiUrl.ToString(),
+            CompanyKey = companyKey,
+            Agent = agent,
+            StartTime = startTime.ToTimestamp(),
+            EndTime = endTime.ToTimestamp()
+        };
+
+        var reply = await _client
+                 .GameHistoryBySportsBookAsync(
+                     request: request,
+                     cancellationToken: cancellationToken)
+                 .ConfigureAwait(false);
+
+        if (!reply.Items.Any())
+        {
+            yield break;
+        }
+
+        foreach (var item in reply.Items)
+        {
+            yield return item;
+        }
+    }
+    public async IAsyncEnumerable<GameHistoryInfo> GameHistoryByVirtualSportsAsync(
+        Uri apiUrl,
+        string companyKey,
+        string agent,
+        DateTime startTime,
+        DateTime endTime,
+       [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    {
+        var request = new GameHistoryRequest()
+        {
+            ApiUrl = apiUrl.ToString(),
+            CompanyKey = companyKey,
+            Agent = agent,
+            StartTime = startTime.ToTimestamp(),
+            EndTime = endTime.ToTimestamp()
+        };
+
+        var reply = await _client
+                 .GameHistoryByVirtualSportsAsync(
+                     request: request,
+                     cancellationToken: cancellationToken)
+                 .ConfigureAwait(false);
+
+        if (!reply.Items.Any())
+        {
+            yield break;
+        }
+
+        foreach (var item in reply.Items)
+        {
+            yield return item;
+        }
     }
 
     public async ValueTask<GameUrlReply> GameUrlBySportsBookAsync(
