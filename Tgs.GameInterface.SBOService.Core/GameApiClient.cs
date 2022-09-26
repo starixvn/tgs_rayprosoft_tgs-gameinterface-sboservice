@@ -103,14 +103,12 @@ internal class GameApiClient : IGameApiClient
             };
     }
 
-    public async IAsyncEnumerable<BetTransactionResponse> GetBetListByModifyDateAsync(
+    public async IAsyncEnumerable<BetSportsBookResponse> GetBetListByModifyDateBySportsBookAsync(
         Uri apiUrl,
         string companyKey,
-        string portfolio,
         DateTime startDate,
         DateTime endDate,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
-
     {
         var startTimeEastern = TimeZoneInfo.ConvertTime(startDate.ToUniversalTime(), _timeZone);
         var endTimeEastern = TimeZoneInfo.ConvertTime(endDate.ToUniversalTime(), _timeZone);
@@ -120,7 +118,7 @@ internal class GameApiClient : IGameApiClient
         JsonObject request = new JsonObject
         {
             { "CompanyKey", companyKey },
-            { "Portfolio", portfolio },
+            { "Portfolio", "SportsBook" },
             { "StartDate", startTimeEastern.ToString("yyyy-MM-ddTHH:mm:ss.fffZ") },
             { "EndDate", endTimeEastern.ToString("yyyy-MM-ddTHH:mm:ss.fffZ") },
             { "Language","en" },
@@ -141,7 +139,56 @@ internal class GameApiClient : IGameApiClient
             throw new GameProvisioningErrorException(jsonNode["error"]!.ToJsonString());
         }
 
-        var betTransactions = jsonNode["result"]?.Deserialize<IEnumerable<BetTransactionResponse>>(_jsonSerializerOptions) ?? Enumerable.Empty<BetTransactionResponse>();
+        var betTransactions = jsonNode["result"]?.Deserialize<IEnumerable<BetSportsBookResponse>>(_jsonSerializerOptions) ?? Enumerable.Empty<BetSportsBookResponse>();
+
+        if (!betTransactions.Any())
+        {
+            yield break;
+        }
+
+        foreach (var betTransaction in betTransactions)
+        {
+            yield return betTransaction;
+        }
+    }
+
+    public async IAsyncEnumerable<BetVirtualSportsResponse> GetBetListByModifyDateByVirtualSportsAsync(
+        Uri apiUrl,
+        string companyKey,
+        DateTime startDate,
+        DateTime endDate,
+        [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    {
+        var startTimeEastern = TimeZoneInfo.ConvertTime(startDate.ToUniversalTime(), _timeZone);
+        var endTimeEastern = TimeZoneInfo.ConvertTime(endDate.ToUniversalTime(), _timeZone);
+
+        var url = new Uri(apiUrl, "/web-root/restricted/report/v2/get-bet-list-by-modify-date.aspx");
+
+        JsonObject request = new JsonObject
+        {
+            { "CompanyKey", companyKey },
+            { "Portfolio", "VirtualSports" },
+            { "StartDate", startTimeEastern.ToString("yyyy-MM-ddTHH:mm:ss.fffZ") },
+            { "EndDate", endTimeEastern.ToString("yyyy-MM-ddTHH:mm:ss.fffZ") },
+            { "Language","en" },
+            { "IsGetDownline",true },
+        };
+
+        var jsonNode = await PostAsync(
+                url,
+                request,
+                "GetBetListByModifyDateByVirtualSports",
+                cancellationToken)
+            .ConfigureAwait(false);
+
+        var id = jsonNode["error"]!["id"]!.GetValue<int>();
+
+        if (id is not 0)
+        {
+            throw new GameProvisioningErrorException(jsonNode["error"]!.ToJsonString());
+        }
+
+        var betTransactions = jsonNode["result"]?.Deserialize<IEnumerable<BetVirtualSportsResponse>>(_jsonSerializerOptions) ?? Enumerable.Empty<BetVirtualSportsResponse>();
 
         if (!betTransactions.Any())
         {

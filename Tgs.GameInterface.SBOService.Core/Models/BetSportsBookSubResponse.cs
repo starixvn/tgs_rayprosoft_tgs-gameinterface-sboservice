@@ -2,7 +2,7 @@
 
 namespace Tgs.GameInterface.SBOService.Core.Models;
 
-public record BetTransactionSubResponse
+public record BetSportsBookSubResponse
 {
     [JsonPropertyName("betOption")]
     public string BetOption { get; init; } = default!;
