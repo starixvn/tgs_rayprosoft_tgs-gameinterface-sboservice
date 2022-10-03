@@ -1,0 +1,15 @@
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Tgs.GameInterface.SBOService.ViewModels;
+
+public record PlayerBalanceViewModel
+{
+    [Required]
+    public Uri ApiUrl { get; init; } = default!;
+    [Required]
+    public string CompanyKey { get; init; } = default!;
+    [Required]
+    public string Agent { get; init; } = default!;
+    [Required]
+    public string Username { get; init; } = default!;
+}
