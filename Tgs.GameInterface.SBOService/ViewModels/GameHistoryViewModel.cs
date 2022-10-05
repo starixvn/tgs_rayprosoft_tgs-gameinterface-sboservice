@@ -1,0 +1,17 @@
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Tgs.GameInterface.SBOService.ViewModels;
+
+public record GameHistoryViewModel
+{
+    [Required]
+    public Uri ApiUrl { get; init; } = default!;
+    [Required]
+    public string CompanyKey { get; init; } = default!;
+    [Required]
+    public string Agent { get; init; } = default!;
+    [Required]
+    public DateTime StartTime { get; init; }
+    [Required]
+    public DateTime EndTime { get; init; }
+}
