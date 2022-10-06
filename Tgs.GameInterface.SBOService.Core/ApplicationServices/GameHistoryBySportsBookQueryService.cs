@@ -72,8 +72,8 @@ internal class GameHistoryBySportsBookQueryService : IQueryService<GameHistoryBy
                 {
                     var status when status.Equals("running", StringComparison.OrdinalIgnoreCase) => 0,
                     var status when status.Equals("lose", StringComparison.OrdinalIgnoreCase) => 0,
-                    var status when status.Equals("void", StringComparison.OrdinalIgnoreCase) => x.WinLost,
-                    var status when status.Equals("draw", StringComparison.OrdinalIgnoreCase) => x.WinLost,
+                    var status when status.Equals("void", StringComparison.OrdinalIgnoreCase) => 0,
+                    var status when status.Equals("draw", StringComparison.OrdinalIgnoreCase) => 0,
                     _ => x.WinLost
 
                 },
