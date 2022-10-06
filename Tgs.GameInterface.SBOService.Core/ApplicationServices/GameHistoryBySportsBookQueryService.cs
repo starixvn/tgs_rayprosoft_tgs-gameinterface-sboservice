@@ -58,9 +58,25 @@ internal class GameHistoryBySportsBookQueryService : IQueryService<GameHistoryBy
                 x.SettleTime,
                 x.Stake,
                 x.ActualStake,
-                x.WinLost - x.ActualStake,
+                x.Status switch
+                {
+                    var status when status.Equals("running", StringComparison.OrdinalIgnoreCase) => 0,
+                    var status when status.Equals("lose", StringComparison.OrdinalIgnoreCase) => x.WinLost,
+                    var status when status.Equals("void", StringComparison.OrdinalIgnoreCase) => 0,
+                    var status when status.Equals("draw", StringComparison.OrdinalIgnoreCase) => 0,
+                    _ => x.WinLost - x.ActualStake
+
+                },
                 x.Turnover,
-                x.WinLost,
+                x.Status switch
+                {
+                    var status when status.Equals("running", StringComparison.OrdinalIgnoreCase) => 0,
+                    var status when status.Equals("lose", StringComparison.OrdinalIgnoreCase) => 0,
+                    var status when status.Equals("void", StringComparison.OrdinalIgnoreCase) => x.WinLost,
+                    var status when status.Equals("draw", StringComparison.OrdinalIgnoreCase) => 0,
+                    _ => x.WinLost
+
+                },
                 JsonSerializer.Serialize(x)))
             .AsQueryable();
 
