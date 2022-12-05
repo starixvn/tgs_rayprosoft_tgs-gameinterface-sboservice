@@ -44,6 +44,8 @@ public class GetBetListByModifyDateAgentByVirtualSportsUnitTest
 
         Assert.IsNotNull(actual);
         Assert.IsTrue(actual.Any());
+        Assert.AreEqual("4ucmqplxkuyd", actual[0].PlayerCode);
+        Assert.AreEqual("B2683156", actual[0].ExternalRoundId);
     }
 
     [TestMethod]
@@ -83,6 +85,8 @@ public class GetBetListByModifyDateAgentByVirtualSportsUnitTest
 
         Assert.IsNotNull(actual);
         Assert.IsTrue(actual.Any());
+        Assert.AreEqual("4ucmqplxkuyd", actual[0].PlayerCode);
+        Assert.AreEqual("B2683157", actual[0].ExternalRoundId);
         Assert.AreEqual("running", actual[0].Status);
     }
 }
