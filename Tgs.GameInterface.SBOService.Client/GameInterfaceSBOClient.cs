@@ -13,6 +13,24 @@ internal class GameInterfaceSBOClient : IGameInterfaceSBOClient
         _client = client ?? throw new ArgumentNullException(nameof(client));
     }
 
+    public async ValueTask<string> CheckingServiceAsync(
+        string machineName,
+        CancellationToken cancellationToken = default)
+    {
+        var request = new CheckingServiceRequest
+        {
+            MachineName = machineName,
+        };
+
+        var reply = await _client
+            .CheckingServiceAsync(
+                request: request,
+                cancellationToken: cancellationToken)
+            .ConfigureAwait(false);
+
+        return reply.MachineName;
+    }
+
     public async ValueTask AgentPresetBetSettingsAsync(
         Uri apiUrl,
         string companyKey,

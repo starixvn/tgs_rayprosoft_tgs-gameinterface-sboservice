@@ -4,6 +4,10 @@ namespace Tgs.GameInterface.SBOService.Client;
 
 public interface IGameInterfaceSBOClient
 {
+    ValueTask<string> CheckingServiceAsync(
+        string machineName,
+        CancellationToken cancellationToken = default);
+
     ValueTask AgentPresetBetSettingsAsync(
         Uri apiUrl,
         string companyKey,
