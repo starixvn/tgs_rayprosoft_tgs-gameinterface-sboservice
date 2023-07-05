@@ -10,6 +10,7 @@ namespace Tgs.GameInterface.SBOService.GrpcServices;
 
 public class GameInterfaceSBOGrpcService : GameInterfaceSBOService.GameInterfaceSBOServiceBase
 {
+    private readonly ILogger<GameInterfaceSBOGrpcService> _logger;
     private readonly ICommandService<AgentPresetBetSettingsCommand> _agentPresetBetSettingsService;
     private readonly IGetService<FundInQuery, FundResult> _fundInService;
     private readonly IGetService<FundOutQuery, FundResult> _fundOutService;
@@ -23,6 +24,7 @@ public class GameInterfaceSBOGrpcService : GameInterfaceSBOService.GameInterface
     private readonly ICommandService<PlayerKickCommand> _playerKickService;
 
     public GameInterfaceSBOGrpcService(
+        ILogger<GameInterfaceSBOGrpcService> logger,
         ICommandService<AgentPresetBetSettingsCommand> agentPresetBetSettingsService,
         IGetService<FundInQuery, FundResult> fundInService,
         IGetService<FundOutQuery, FundResult> fundOutService,
@@ -36,6 +38,7 @@ public class GameInterfaceSBOGrpcService : GameInterfaceSBOService.GameInterface
         ICommandService<PlayerKickCommand> playerKickService
         )
     {
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _agentPresetBetSettingsService = agentPresetBetSettingsService ?? throw new ArgumentNullException(nameof(agentPresetBetSettingsService));
         _fundInService = fundInService ?? throw new ArgumentNullException(nameof(fundInService));
         _fundOutService = fundOutService ?? throw new ArgumentNullException(nameof(fundOutService));
@@ -47,6 +50,18 @@ public class GameInterfaceSBOGrpcService : GameInterfaceSBOService.GameInterface
         _playerBalanceService = playerBalanceService ?? throw new ArgumentNullException(nameof(playerBalanceService));
         _playerCreateService = playerCreateService ?? throw new ArgumentNullException(nameof(playerCreateService));
         _playerKickService = playerKickService ?? throw new ArgumentNullException(nameof(playerKickService));
+    }
+
+    public override Task<CheckingServiceReply> CheckingService(
+        CheckingServiceRequest request, 
+        ServerCallContext context)
+    {
+        _logger.LogWarning("LogOn:{logOn} Message: Create a check connection.({machineName})", DateTime.Now.ToString("o"), request.MachineName);
+
+        return Task.FromResult(new CheckingServiceReply
+        {
+            MachineName = Environment.MachineName
+        });
     }
 
     public override async Task<BaseReply> AgentPresetBetSettings(

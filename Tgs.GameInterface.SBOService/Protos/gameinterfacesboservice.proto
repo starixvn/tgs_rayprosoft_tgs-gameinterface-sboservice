@@ -1,4 +1,4 @@
-syntax = "proto3";
+﻿syntax = "proto3";
 
 import "phoenix/protobuf/decimal.proto";
 import "google/protobuf/timestamp.proto";
@@ -21,6 +21,7 @@ service GameInterfaceSBOService {
   rpc GameUrlByVirtualSports (GameUrlByVirtualSportsRequest) returns (GameUrlReply);
   rpc GameHistoryBySportsBook (GameHistoryRequest) returns (GameHistoryReply);
   rpc GameHistoryByVirtualSports  (GameHistoryRequest) returns (GameHistoryReply);
+  rpc CheckingService(CheckingServiceRequest) returns (CheckingServiceReply);
 }
 
 // The request message containing the user's name.
@@ -95,6 +96,10 @@ message GameHistoryRequest {
 	google.protobuf.Timestamp end_time = 5;
 }
 
+message CheckingServiceRequest{
+    string machine_name = 1;
+}
+
 // The response message containing the greetings.
 message BaseReply{
 	bool status = 1;
@@ -139,6 +144,9 @@ message GameHistoryInfo {
 	string additional_data = 12;
 }
 
+message CheckingServiceReply{
+    string machine_name = 1;
+}
 
 enum GameHistoryStatus{
 	GAME_HISTORY_STATUS_UNKNOWN = 0;

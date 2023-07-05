@@ -7,16 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.GameInterface.SBOServic
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.GameInterface.SBOService.Core", "Tgs.GameInterface.SBOService.Core\Tgs.GameInterface.SBOService.Core.csproj", "{E6E316CF-C870-4AA2-870B-1A800673BE64}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "方案項目", "方案項目", "{8A47515B-993E-4037-B76F-E2B690E89AC1}"
-	ProjectSection(SolutionItems) = preProject
-		.editorconfig = .editorconfig
-		CodeMaid.config = CodeMaid.config
-		nuget.config = nuget.config
-	EndProjectSection
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.GameInterface.SBOService.Core.UnitTest", "Tgs.GameInterface.SBOService.Core.UnitTest\Tgs.GameInterface.SBOService.Core.UnitTest.csproj", "{3192ED16-F66B-47B3-B70E-B0F860EDD421}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tgs.GameInterface.SBOService.Client", "Tgs.GameInterface.SBOService.Client\Tgs.GameInterface.SBOService.Client.csproj", "{2DFB1073-6980-4E42-B93B-6C343D2EEEB5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.GameInterface.SBOService.Client", "Tgs.GameInterface.SBOService.Client\Tgs.GameInterface.SBOService.Client.csproj", "{2DFB1073-6980-4E42-B93B-6C343D2EEEB5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
