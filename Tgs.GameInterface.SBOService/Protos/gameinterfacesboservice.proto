@@ -108,12 +108,13 @@ message BaseReply{
 message PlayerBalanceReply {
 	bool is_player_exist = 1;
 	phoenix.protobuf.DecimalValue balance = 2;
+	phoenix.protobuf.DecimalValue free_balance = 3;
+	phoenix.protobuf.DecimalValue outstanding_balance = 4;
 }
 
 message FundReply {
 	string txn_id = 1;
-    string refno = 2;
-    phoenix.protobuf.DecimalValue balance = 3; 
+    string resp = 2;
 }
 
 message FundStatusReply {

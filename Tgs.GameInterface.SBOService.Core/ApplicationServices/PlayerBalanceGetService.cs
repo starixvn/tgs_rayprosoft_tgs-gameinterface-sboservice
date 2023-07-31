@@ -24,8 +24,12 @@ internal class PlayerBalanceGetService : IGetService<PlayerBalanceQuery, PlayerB
                 cancellationToken)
             .ConfigureAwait(false);
 
-        return new PlayerBalanceResult(
-            IsPlayerExist: response.IsPlayerExist,
-            Balance: response.Balance - response.Outstanding);
+        return new PlayerBalanceResult
+        {
+            IsPlayerExist = response.IsPlayerExist,
+            Balance = response.Balance,
+            OutstandingBalance = response.Outstanding
+
+        };
     }
 }

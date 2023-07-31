@@ -53,7 +53,7 @@ public class GameInterfaceSBOGrpcService : GameInterfaceSBOService.GameInterface
     }
 
     public override Task<CheckingServiceReply> CheckingService(
-        CheckingServiceRequest request, 
+        CheckingServiceRequest request,
         ServerCallContext context)
     {
         _logger.LogWarning("LogOn:{logOn} Message: Create a check connection.({machineName})", DateTime.Now.ToString("o"), request.MachineName);
@@ -110,8 +110,7 @@ public class GameInterfaceSBOGrpcService : GameInterfaceSBOService.GameInterface
         return new FundReply()
         {
             TxnId = result.TxnId,
-            Refno = result.Refno,
-            Balance = result.Balance
+            Resp = result.Resp
         };
     }
 
@@ -135,8 +134,7 @@ public class GameInterfaceSBOGrpcService : GameInterfaceSBOService.GameInterface
         return new FundReply()
         {
             TxnId = result.TxnId,
-            Refno = result.Refno,
-            Balance = result.Balance
+            Resp = result.Resp
         };
     }
 
@@ -317,7 +315,9 @@ public class GameInterfaceSBOGrpcService : GameInterfaceSBOService.GameInterface
         return new PlayerBalanceReply()
         {
             IsPlayerExist = result.IsPlayerExist,
-            Balance = result.Balance
+            Balance = result.Balance,
+            FreeBalance = result.FreeBalance,
+            OutstandingBalance = result.OutstandingBalance
         };
     }
 

@@ -95,13 +95,9 @@ internal class GameApiClient : IGameApiClient
 
         return id is not 0
             ? throw new GameProvisioningErrorException(jsonNode["error"]!.ToJsonString())
-            : new TransactionResponse()
-            {
-                TxnId = jsonNode["txnId"]?.GetValue<string>() ?? string.Empty,
-                Refno = jsonNode["refno"]?.GetValue<string>() ?? string.Empty,
-                Balance = jsonNode["balance"]?.GetValue<decimal>() ?? 0,
-                Outstanding = jsonNode["outstanding"]?.GetValue<decimal>() ?? 0,
-            };
+            : new TransactionResponse(
+                TxnId: jsonNode["txnId"]?.GetValue<string>() ?? string.Empty,
+                Resp: jsonNode.ToJsonString());
     }
 
     public async IAsyncEnumerable<BetBySportsBookResponse> GetBetListByModifyDateAgentBySportsBookAsync(
@@ -492,13 +488,9 @@ internal class GameApiClient : IGameApiClient
 
         return id is not 0
             ? throw new GameProvisioningErrorException(jsonNode["error"]!.ToJsonString())
-            : new TransactionResponse()
-            {
-                TxnId = jsonNode["txnId"]?.GetValue<string>() ?? string.Empty,
-                Refno = jsonNode["refno"]?.GetValue<string>() ?? string.Empty,
-                Balance = jsonNode["balance"]?.GetValue<decimal>() ?? 0,
-                Outstanding = jsonNode["outstanding"]?.GetValue<decimal>() ?? 0,
-            };
+            : new TransactionResponse(
+                TxnId: jsonNode["txnId"]?.GetValue<string>() ?? string.Empty,
+                Resp: jsonNode.ToJsonString());
     }
 
     private async ValueTask<JsonNode> PostAsync(
@@ -528,7 +520,7 @@ internal class GameApiClient : IGameApiClient
         var responseMessage = default(string);
         using (var sr = new StreamReader(httpResponseMessage.Content.ReadAsStreamAsync(cancellationToken).Result))
         {
-            responseMessage = await sr.ReadToEndAsync() ?? string.Empty;
+            responseMessage = await sr.ReadToEndAsync(cancellationToken: cancellationToken) ?? string.Empty;
         }
 
         var apiLogEvent = new GameApiLogEvent

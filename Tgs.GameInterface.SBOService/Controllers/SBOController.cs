@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Tgs.GameInterface.SBOService.Core.ApplicationServices;
 using Tgs.GameInterface.SBOService.Core.Models;
 using Tgs.GameInterface.SBOService.Protos;
@@ -95,8 +95,7 @@ public class SBOController : ControllerBase
 
         return new FundResultViewModel(
             result.TxnId,
-            result.Refno,
-            result.Balance);
+            result.Resp);
     }
 
     /// <summary>
@@ -139,8 +138,7 @@ public class SBOController : ControllerBase
 
         return new FundResultViewModel(
             result.TxnId,
-            result.Refno,
-            result.Balance);
+            result.Resp);
     }
 
     /// <summary>
@@ -447,14 +445,16 @@ public class SBOController : ControllerBase
             source.Username);
 
         var result = await service
-                 .GetAsync(
-                     query: query,
-                     cancellationToken: HttpContext.RequestAborted)
-                 .ConfigureAwait(false);
+            .GetAsync(
+            query: query,
+            cancellationToken: HttpContext.RequestAborted)
+            .ConfigureAwait(false);
 
         return new PlayerBalanceResultViewModel(
             result.IsPlayerExist,
-            result.Balance);
+            result.Balance,
+            result.FreeBalance,
+            result.OutstandingBalance);
     }
 
     /// <summary>

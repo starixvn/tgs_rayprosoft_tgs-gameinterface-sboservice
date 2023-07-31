@@ -1,4 +1,5 @@
-﻿using NSubstitute;
+﻿using System.Text.Json.Nodes;
+using NSubstitute;
 using Snowflake;
 using Tgs.GameInterface.SBOService.Core.ApplicationServices;
 using Tgs.GameInterface.SBOService.Core.Models;
@@ -21,24 +22,20 @@ public class FundInGetServiceUnitTest
             "4ucmqplxkuyd",
             1);
 
-        var response = new TransactionResponse()
-        {
-            Refno = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString(),
-            TxnId = "123465",
-            Balance = 0,
-            Outstanding = 0
-        };
+        var response = new TransactionResponse(
+            TxnId: "123465",
+            Resp: new JsonObject { ["TxnId"] = "123456" }.ToJsonString());
 
         _ = fakeGameApiClient
              .WithdrawAsync(
                 Arg.Is(query.ApiUrl),
-                Arg.Is(query.CompanyKey),
-                Arg.Is($"{query.Agent.Split('_')[0]}_{query.Username}"),
-                Arg.Any<string>(),
-                Arg.Is(query.Amount),
-                Arg.Is(false),
-                Arg.Any<CancellationToken>())
-             .Returns(response);
+                    Arg.Is(query.CompanyKey),
+                    Arg.Is($"{query.Agent.Split('_')[0]}_{query.Username}"),
+                    Arg.Any<string>(),
+                    Arg.Is(query.Amount),
+                    Arg.Is(false),
+                    Arg.Any<CancellationToken>())
+                 .Returns(response);
 
         var service = new FundInGetService(
             fakeGameApiClient,
@@ -50,6 +47,7 @@ public class FundInGetServiceUnitTest
                 .ConfigureAwait(false);
 
         Assert.IsNotNull(actual);
-        Assert.AreEqual(0m, actual.Balance);
+        Assert.AreEqual("123465", actual.TxnId);
+        Assert.AreEqual(new JsonObject { ["TxnId"] = "123456" }.ToJsonString(), actual.Resp);
     }
 }

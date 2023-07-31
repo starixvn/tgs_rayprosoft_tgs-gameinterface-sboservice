@@ -42,6 +42,6 @@ public class DepositUnitTest
                .ConfigureAwait(false);
 
         Assert.IsNotNull(actual);
-        Assert.AreEqual(1m, actual.Balance);
+        Assert.AreEqual("D20190208190823090", actual.TxnId);
     }
 }

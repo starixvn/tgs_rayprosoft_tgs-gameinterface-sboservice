@@ -2,5 +2,4 @@
 
 public record FundResultViewModel(
     string TxnId,
-    string Refno,
-    decimal Balance);
+    string Resp);

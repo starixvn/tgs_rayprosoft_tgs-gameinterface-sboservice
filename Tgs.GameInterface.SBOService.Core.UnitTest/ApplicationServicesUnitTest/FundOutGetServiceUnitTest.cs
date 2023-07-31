@@ -1,4 +1,5 @@
-﻿using NSubstitute;
+﻿using System.Text.Json.Nodes;
+using NSubstitute;
 using Snowflake;
 using Tgs.GameInterface.SBOService.Core.ApplicationServices;
 using Tgs.GameInterface.SBOService.Core.Models;
@@ -21,13 +22,9 @@ public class FundOutGetServiceUnitTest
             "4ucmqplxkuyd",
             1);
 
-        var response = new TransactionResponse()
-        {
-            Refno = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString(),
-            TxnId = "123465",
-            Balance = 1,
-            Outstanding = 0
-        };
+        var response = new TransactionResponse(
+            TxnId: "123465",
+            Resp: new JsonObject { ["TxnId"] = "123456" }.ToJsonString()  );
 
         _ = fakeGameApiClient
              .DepositAsync(
@@ -49,6 +46,7 @@ public class FundOutGetServiceUnitTest
                 .ConfigureAwait(false);
 
         Assert.IsNotNull(actual);
-        Assert.AreEqual(1m, actual.Balance);
+        Assert.AreEqual("123465", actual.TxnId);
+        Assert.AreEqual(new JsonObject { ["TxnId"] = "123456" }.ToJsonString(), actual.Resp);
     }
 }

@@ -32,8 +32,7 @@ internal class FundOutGetService : IGetService<FundOutQuery, FundResult>
             .ConfigureAwait(false);
 
         return new FundResult(
-            response.TxnId,
-            response.Refno,
-            response.Balance - response.Outstanding);
+            TxnId: response.TxnId,
+            Resp: response.Resp);
     }
 }

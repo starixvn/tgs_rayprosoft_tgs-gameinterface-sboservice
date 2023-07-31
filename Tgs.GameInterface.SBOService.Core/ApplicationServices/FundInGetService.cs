@@ -33,8 +33,7 @@ internal class FundInGetService : IGetService<FundInQuery, FundResult>
             .ConfigureAwait(false);
 
         return new FundResult(
-            response.TxnId,
-            response.Refno,
-            response.Balance - response.Outstanding);
+            TxnId: response.TxnId,
+            Resp: response.Resp);
     }
 }
