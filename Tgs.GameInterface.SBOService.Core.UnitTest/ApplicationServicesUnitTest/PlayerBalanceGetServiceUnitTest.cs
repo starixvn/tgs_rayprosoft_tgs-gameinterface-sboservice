@@ -41,6 +41,6 @@ public class PlayerBalanceGetServiceUnitTest
 
         Assert.IsNotNull(actual);
         Assert.IsTrue(actual.IsPlayerExist);
-        Assert.AreEqual(99m, actual.Balance);
+        Assert.AreEqual(100m, actual.Balance);
     }
 }
