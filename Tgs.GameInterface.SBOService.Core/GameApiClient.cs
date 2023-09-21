@@ -157,7 +157,7 @@ internal class GameApiClient : IGameApiClient
                 ValidBet: decimal.Parse(x["actualStake"]!.ToString()),
                 Turnover: decimal.Parse(x["turnover"]!.ToString()),
                 PlayerWinLoss: decimal.Parse(x["winLost"]!.ToString()),
-                AdditionalData: x.ToString()
+                AdditionalData: x.ToJsonString()
             )) ?? Enumerable.Empty<BetBySportsBookResponse>();
 
         foreach (var betTransaction in betTransactions)
@@ -223,7 +223,7 @@ internal class GameApiClient : IGameApiClient
                 ValidBet: decimal.Parse(x["actualStake"]!.ToString()),
                 Turnover: decimal.Parse(x["turnover"]!.ToString()),
                 PlayerWinLoss: decimal.Parse(x["winLost"]!.ToString()),
-                AdditionalData: x.ToString()
+                AdditionalData: x.ToJsonString()
             )) ?? Enumerable.Empty<BetByVirtualSportsResponse>();
 
         foreach (var betTransaction in betTransactions)

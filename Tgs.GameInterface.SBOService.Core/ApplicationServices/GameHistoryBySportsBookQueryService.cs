@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using Tgs.GameInterface.SBOService.Core.Models;
 using Tgs.ServiceUtility;
@@ -50,28 +51,28 @@ internal class GameHistoryBySportsBookQueryService : IQueryService<GameHistoryBy
             x.Status.Equals("won", StringComparison.OrdinalIgnoreCase) ||
             x.Status.Equals("void", StringComparison.OrdinalIgnoreCase))
             .Select(x => new GameHistoryResult(
-                x.PlayerCode,
-                x.ExternalRoundId,
-                x.SportsType,
-                x.Status,
-                x.OrderTime,
-                x.SettleTime,
-                x.Bet,
-                x.ValidBet,
-                x.Status switch
+                PlayerCode: x.PlayerCode,
+                ExternalRoundId: x.ExternalRoundId,
+                ExternalGameId: x.SportsType,
+                Status: x.Status,
+                ExternalCreatedOn: x.OrderTime,
+                ExternalClosedOn: x.SettleTime,
+                Bet: x.Bet,
+                ValidBet: x.ValidBet,
+                PlayerWinLoss: x.Status switch
                 {
                     var status when status.Equals("running", StringComparison.OrdinalIgnoreCase) => 0,
                     var status when status.Equals("void", StringComparison.OrdinalIgnoreCase) => 0,
                     _ => x.PlayerWinLoss
                 },
-                x.Turnover,
-                x.Status switch
+                Turnover: x.Turnover,
+                Settle: x.Status switch
                 {
                     var status when status.Equals("running", StringComparison.OrdinalIgnoreCase) => 0,
                     var status when status.Equals("void", StringComparison.OrdinalIgnoreCase) => x.PlayerWinLoss,
                     _ => x.PlayerWinLoss + x.ValidBet
                 },
-                JsonSerializer.Serialize(x)))
+                AdditionalData: x.AdditionalData))
             .AsQueryable();
 
         if (!gameRecords.Any())
