@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Tgs.GameInterface.SBOService.Core.ApplicationServices;
-using Tgs.GameInterface.SBOService.Core.Models;
 using Tgs.GameInterface.SBOService.Protos;
 using Tgs.GameInterface.SBOService.ViewModels;
 using Tgs.ServiceUtility;
@@ -25,7 +24,7 @@ public class SBOController : ControllerBase
     ///         {
     ///             "apiUrl": "https://ex-api-demo-yy.568win.com",
     ///             "companyKey": "49ED28A987624CA0A3F834C3B8A69AAB",
-    ///             "username": "STAG_GPI_CNY",
+    ///             "agent": "STAG_GPI_CNY",
     ///             "currency": "CNY",
     ///             "min": 1,
     ///             "max": 5000,
@@ -42,17 +41,16 @@ public class SBOController : ControllerBase
         var command = new AgentPresetBetSettingsCommand(
             source.ApiUrl,
             source.CompanyKey,
-            source.Username,
+            source.Agent,
             source.Currency,
             source.Min,
             source.Max,
             source.MaxPerMatch,
             source.CasinoTableLimit);
 
-        return service
-                .ExecuteAsync(
-                    command: command,
-                    cancellationToken: HttpContext.RequestAborted);
+        return service.ExecuteAsync(
+            command: command,
+            cancellationToken: HttpContext.RequestAborted);
     }
 
     /// <summary>
@@ -70,7 +68,8 @@ public class SBOController : ControllerBase
     ///             "apiUrl": "https://ex-api-demo-yy.568win.com",
     ///             "companyKey": "49ED28A987624CA0A3F834C3B8A69AAB",
     ///             "agent": "STAG_GPI_CNY",
-    ///             "username": "4ucmqplxkuyd",
+    ///             "playerCode": "4ucmqplxkuyd",
+    ///             "orderId": "W3100251169407373312"
     ///             "amount": 1
     ///         }
     /// </remarks>
@@ -84,14 +83,14 @@ public class SBOController : ControllerBase
             source.ApiUrl,
             source.CompanyKey,
             source.Agent,
-            source.Username,
+            source.PlayerCode,
+            source.OrderId,
             source.Amount);
 
-        var result = await service
-                 .GetAsync(
-                     query: query,
-                     cancellationToken: HttpContext.RequestAborted)
-                 .ConfigureAwait(false);
+        var result = await service.GetAsync(
+            query: query,
+            cancellationToken: HttpContext.RequestAborted)
+            .ConfigureAwait(false);
 
         return new FundResultViewModel(
             result.TxnId,
@@ -113,7 +112,8 @@ public class SBOController : ControllerBase
     ///             "apiUrl": "https://ex-api-demo-yy.568win.com",
     ///             "companyKey": "49ED28A987624CA0A3F834C3B8A69AAB",
     ///             "agent": "STAG_GPI_CNY",
-    ///             "username": "4ucmqplxkuyd",
+    ///             "playerCode": "4ucmqplxkuyd",
+    ///             "orderId": "D3100246965624246272"
     ///             "amount": 1
     ///         }
     /// </remarks>
@@ -127,14 +127,14 @@ public class SBOController : ControllerBase
             source.ApiUrl,
             source.CompanyKey,
             source.Agent,
-            source.Username,
+            source.PlayerCode,
+            source.OrderId,
             source.Amount);
 
-        var result = await service
-                 .GetAsync(
-                     query: query,
-                     cancellationToken: HttpContext.RequestAborted)
-                 .ConfigureAwait(false);
+        var result = await service.GetAsync(
+            query: query,
+            cancellationToken: HttpContext.RequestAborted)
+            .ConfigureAwait(false);
 
         return new FundResultViewModel(
             result.TxnId,
@@ -155,7 +155,7 @@ public class SBOController : ControllerBase
     ///         {
     ///             "apiUrl": "https://ex-api-demo-yy.568win.com",
     ///             "companyKey": "49ED28A987624CA0A3F834C3B8A69AAB",
-    ///             "txnId": "3076969062631477248"
+    ///             "orderId": "D3100246965624246272"
     ///         }
     /// </remarks>
     [HttpPost("fund/Status", Name = "FundStatus")]
@@ -167,13 +167,12 @@ public class SBOController : ControllerBase
         var query = new FundStatusQuery(
             source.ApiUrl,
             source.CompanyKey,
-            source.TxnId);
+            source.OrderId);
 
-        return await service
-                 .GetAsync(
-                     query: query,
-                     cancellationToken: HttpContext.RequestAborted)
-                 .ConfigureAwait(false);
+        return await service.GetAsync(
+            query: query,
+            cancellationToken: HttpContext.RequestAborted)
+            .ConfigureAwait(false);
     }
 
     /// <summary>
@@ -191,7 +190,7 @@ public class SBOController : ControllerBase
     ///             "apiUrl": "https://ex-api-demo-yy.568win.com",
     ///             "companyKey": "49ED28A987624CA0A3F834C3B8A69AAB",
     ///             "agent": "STAG_GPI_CNY",
-    ///             "username": "4ucmqplxkuyd",
+    ///             "playerCode": "4ucmqplxkuyd",
     ///             "lang": "zh-cn",
     ///             "isMobile": false
     ///         }
@@ -205,15 +204,14 @@ public class SBOController : ControllerBase
             source.ApiUrl,
             source.CompanyKey,
             source.Agent,
-            source.Username,
+            source.PlayerCode,
             source.Lang,
             source.IsMobile);
 
-        var result = await service
-                 .GetAsync(
-                     query: query,
-                     cancellationToken: HttpContext.RequestAborted)
-                 .ConfigureAwait(false);
+        var result = await service.GetAsync(
+            query: query,
+            cancellationToken: HttpContext.RequestAborted)
+            .ConfigureAwait(false);
 
         return new GameUrlResultViewModel(
             result.IsPlayerExist,
@@ -235,7 +233,7 @@ public class SBOController : ControllerBase
     ///             "apiUrl": "https://ex-api-demo-yy.568win.com",
     ///             "companyKey": "49ED28A987624CA0A3F834C3B8A69AAB",
     ///             "agent": "STAG_GPI_CNY",
-    ///             "username": "4ucmqplxkuyd",
+    ///             "playerCode": "4ucmqplxkuyd",
     ///             "lang": "zh-cn"
     ///         }
     /// </remarks>
@@ -248,14 +246,13 @@ public class SBOController : ControllerBase
             source.ApiUrl,
             source.CompanyKey,
             source.Agent,
-            source.Username,
+            source.PlayerCode,
             source.Lang);
 
-        var result = await service
-                 .GetAsync(
-                     query: query,
-                     cancellationToken: HttpContext.RequestAborted)
-                 .ConfigureAwait(false);
+        var result = await service.GetAsync(
+            query: query,
+            cancellationToken: HttpContext.RequestAborted)
+            .ConfigureAwait(false);
 
         return new GameUrlResultViewModel(
             result.IsPlayerExist,
@@ -263,7 +260,7 @@ public class SBOController : ControllerBase
     }
 
     /// <summary>
-    /// Games the history by sports book asynchronous.
+    /// Games the wager by sports book asynchronous.
     /// </summary>
     /// <param name="service">The service.</param>
     /// <param name="source">The source.</param>
@@ -281,50 +278,50 @@ public class SBOController : ControllerBase
     ///             "endTime": "2022-09-22T17:30:00+08:00"
     ///         }
     /// </remarks>
-    [HttpPost("game/history/sportsbook", Name = "GameHistoryBySportsBook")]
-    public async IAsyncEnumerable<GameHistoryResultViewModel> GameHistoryBySportsBookAsync(
-        [FromServices] IQueryService<GameHistoryBySportsBookQuery, GameHistoryResult> service,
-        GameHistoryViewModel source)
+    [HttpPost("game/wager/sportsbook", Name = "GameWagerBySportsBook")]
+    public async IAsyncEnumerable<GameWagerResultViewModel> GameWagerBySportsBookAsync(
+        [FromServices] IQueryService<GameWagerBySportsBookQuery, GameWagerResult> service,
+        GameWagerViewModel source)
     {
-        var query = new GameHistoryBySportsBookQuery(
+        var query = new GameWagerBySportsBookQuery(
             source.ApiUrl,
             source.CompanyKey,
             source.Agent,
             source.StartTime,
             source.EndTime);
 
-        var gameHistoryResults = await service
-                 .QueryAsync(
-                     query: query,
-                     cancellationToken: HttpContext.RequestAborted)
-                 .ToArrayAsync()
-                 .ConfigureAwait(false);
+        var gameWagers = await service.QueryAsync(
+            query: query,
+            cancellationToken: HttpContext.RequestAborted)
+            .ToArrayAsync(
+            cancellationToken: HttpContext.RequestAborted)
+            .ConfigureAwait(false);
 
-        if (!gameHistoryResults.Any())
+        if (!gameWagers.Any())
         {
             yield break;
         }
 
-        foreach (var gameHistoryResult in gameHistoryResults)
+        foreach (var gameWager in gameWagers)
         {
-            yield return new GameHistoryResultViewModel(
-                gameHistoryResult.PlayerCode,
-                gameHistoryResult.ExternalRoundId,
-                gameHistoryResult.ExternalGameId,
-                (GameHistoryStatus)Enum.Parse(typeof(GameHistoryStatus), gameHistoryResult.Status, true),
-                gameHistoryResult.ExternalCreatedOn,
-                gameHistoryResult.ExternalClosedOn,
-                gameHistoryResult.Bet,
-                gameHistoryResult.ValidBet,
-                gameHistoryResult.PlayerWinLoss,
-                gameHistoryResult.Turnover,
-                gameHistoryResult.Settle,
-                gameHistoryResult.AdditionalData);
+            yield return new GameWagerResultViewModel(
+                gameWager.PlayerCode,
+                gameWager.ExternalWagerId,
+                gameWager.ExternalGameId,
+                (GameHistoryStatus)Enum.Parse(typeof(GameHistoryStatus), gameWager.Status, true),
+                gameWager.ExternalCreatedOn,
+                gameWager.ExternalClosedOn,
+                gameWager.Bet,
+                gameWager.ValidBet,
+                gameWager.PlayerWinLoss,
+                gameWager.Turnover,
+                gameWager.Settle,
+                gameWager.AdditionalData);
         }
     }
 
     /// <summary>
-    /// Games the history by virtual sports asynchronous.
+    /// Games the wager by virtual sports asynchronous.
     /// </summary>
     /// <param name="service">The service.</param>
     /// <param name="source">The source.</param>
@@ -342,45 +339,45 @@ public class SBOController : ControllerBase
     ///             "endTime": "2022-09-22T17:00:00+08:00"
     ///         }
     /// </remarks>
-    [HttpPost("game/history/virtualsports", Name = "GameHistoryByVirtualSports")]
-    public async IAsyncEnumerable<GameHistoryResultViewModel> GameHistoryByVirtualSportsAsync(
-        [FromServices] IQueryService<GameHistoryByVirtualSportsQuery, GameHistoryResult> service,
-        GameHistoryViewModel source)
+    [HttpPost("game/wager/virtualsports", Name = "GameWagerByVirtualSports")]
+    public async IAsyncEnumerable<GameWagerResultViewModel> GameWagerByVirtualSportsAsync(
+        [FromServices] IQueryService<GameWagerByVirtualSportsQuery, GameWagerResult> service,
+        GameWagerViewModel source)
     {
-        var query = new GameHistoryByVirtualSportsQuery(
+        var query = new GameWagerByVirtualSportsQuery(
             source.ApiUrl,
             source.CompanyKey,
             source.Agent,
             source.StartTime,
             source.EndTime);
 
-        var gameHistoryResults = await service
-                 .QueryAsync(
-                     query: query,
-                     cancellationToken: HttpContext.RequestAborted)
-                 .ToArrayAsync()
-                 .ConfigureAwait(false);
+        var gameWagers = await service.QueryAsync(
+            query: query,
+            cancellationToken: HttpContext.RequestAborted)
+            .ToArrayAsync(
+            cancellationToken: HttpContext.RequestAborted)
+            .ConfigureAwait(false);
 
-        if (!gameHistoryResults.Any())
+        if (!gameWagers.Any())
         {
             yield break;
         }
 
-        foreach (var gameHistoryResult in gameHistoryResults)
+        foreach (var gameWager in gameWagers)
         {
-            yield return new GameHistoryResultViewModel(
-                gameHistoryResult.PlayerCode,
-                gameHistoryResult.ExternalRoundId,
-                gameHistoryResult.ExternalGameId,
-                (GameHistoryStatus)Enum.Parse(typeof(GameHistoryStatus), gameHistoryResult.Status, true),
-                gameHistoryResult.ExternalCreatedOn,
-                gameHistoryResult.ExternalClosedOn,
-                gameHistoryResult.Bet,
-                gameHistoryResult.ValidBet,
-                gameHistoryResult.PlayerWinLoss,
-                gameHistoryResult.Turnover,
-                gameHistoryResult.Settle,
-                gameHistoryResult.AdditionalData);
+            yield return new GameWagerResultViewModel(
+                gameWager.PlayerCode,
+                gameWager.ExternalWagerId,
+                gameWager.ExternalGameId,
+                (GameHistoryStatus)Enum.Parse(typeof(GameHistoryStatus), gameWager.Status, true),
+                gameWager.ExternalCreatedOn,
+                gameWager.ExternalClosedOn,
+                gameWager.Bet,
+                gameWager.ValidBet,
+                gameWager.PlayerWinLoss,
+                gameWager.Turnover,
+                gameWager.Settle,
+                gameWager.AdditionalData);
         }
     }
 
@@ -399,21 +396,20 @@ public class SBOController : ControllerBase
     ///             "apiUrl": "https://ex-api-demo-yy.568win.com",
     ///             "companyKey": "49ED28A987624CA0A3F834C3B8A69AAB",
     ///             "agent": "STAG_GPI_CNY",
-    ///             "username": "4ucmqplxkuyd"
+    ///             "playerCode": "4ucmqplxkuyd"
     ///         }
     /// </remarks>
     [HttpPost("player/create", Name = "PlayerCreate")]
     public ValueTask PlayerCreateAsync(
         [FromServices] ICommandService<PlayerCreateCommand> service,
         PlayerCreateViewModel source)
-        => service
-            .ExecuteAsync(
-               command: new PlayerCreateCommand(
-                    source.ApiUrl,
-                    source.CompanyKey,
-                    source.Agent,
-                    source.Username),
-               cancellationToken: HttpContext.RequestAborted);
+        => service.ExecuteAsync(
+            command: new PlayerCreateCommand(
+                ApiUrl: source.ApiUrl,
+                CompanyKey: source.CompanyKey,
+                Agent: source.Agent,
+                PlayerCode: source.PlayerCode),
+            cancellationToken: HttpContext.RequestAborted);
 
     /// <summary>
     /// Players the balance asynchronous.
@@ -430,7 +426,7 @@ public class SBOController : ControllerBase
     ///             "apiUrl": "https://ex-api-demo-yy.568win.com",
     ///             "companyKey": "49ED28A987624CA0A3F834C3B8A69AAB",
     ///             "agent": "STAG_GPI_CNY",
-    ///             "username": "4ucmqplxkuyd"
+    ///             "playerCode": "4ucmqplxkuyd"
     ///         }
     /// </remarks>
     [HttpPost("player/balance", Name = "PlayerBalance")]
@@ -442,10 +438,9 @@ public class SBOController : ControllerBase
             source.ApiUrl,
             source.CompanyKey,
             source.Agent,
-            source.Username);
+            source.PlayerCode);
 
-        var result = await service
-            .GetAsync(
+        var result = await service.GetAsync(
             query: query,
             cancellationToken: HttpContext.RequestAborted)
             .ConfigureAwait(false);
@@ -472,19 +467,19 @@ public class SBOController : ControllerBase
     ///             "apiUrl": "https://ex-api-demo-yy.568win.com",
     ///             "companyKey": "49ED28A987624CA0A3F834C3B8A69AAB",
     ///             "agent": "STAG_GPI_CNY",
-    ///             "username": "4ucmqplxkuyd"
+    ///             "playerCode": "4ucmqplxkuyd"
     ///         }
     /// </remarks>
     [HttpPost("player/kick", Name = "PlayerKick")]
     public ValueTask PlayerKickAsync(
         [FromServices] ICommandService<PlayerKickCommand> service,
         PlayerKickViewModel source)
-    => service
+        => service
         .ExecuteAsync(
             command: new PlayerKickCommand(
-                source.ApiUrl,
-                source.CompanyKey,
-                source.Agent,
-                source.Username),
+                ApiUrl: source.ApiUrl,
+                CompanyKey: source.CompanyKey,
+                Agent: source.Agent,
+                PlayerCode: source.PlayerCode),
             cancellationToken: HttpContext.RequestAborted);
 }

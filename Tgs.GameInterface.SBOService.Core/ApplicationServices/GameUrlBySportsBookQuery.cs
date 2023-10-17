@@ -4,7 +4,7 @@ public record GameUrlBySportsBookQuery(
     Uri ApiUrl,
     string CompanyKey,
     string Agent,
-    string Username,
+    string PlayerCode,
     string Lang,
     bool IsMobile,
     string Oddstyle = "MY",

@@ -11,7 +11,7 @@ public record GameUrlBySportsBookViewModel
     [Required]
     public string Agent { get; init; } = default!;
     [Required]
-    public string Username { get; init; } = default!;
+    public string PlayerCode { get; init; } = default!;
     [Required]
     public string Lang { get; init; } = default!;
     [Required]

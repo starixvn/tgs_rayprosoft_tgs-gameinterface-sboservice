@@ -4,5 +4,6 @@ public record FundInQuery(
     Uri ApiUrl,
     string CompanyKey,
     string Agent,
-    string Username,
+    string PlayerCode,
+    string OrderId,
     decimal Amount);

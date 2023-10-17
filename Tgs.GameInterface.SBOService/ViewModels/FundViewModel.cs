@@ -11,7 +11,9 @@ public record FundViewModel
     [Required]
     public string Agent { get; init; } = default!;
     [Required]
-    public string Username { get; init; } = default!;
+    public string PlayerCode { get; init; } = default!;
+    [Required]
+    public string OrderId { get; init; } = default!;
     [Required]
     [Range(minimum: 0, maximum: double.MaxValue)]
     public decimal Amount { get; init; }

@@ -2,7 +2,7 @@
 
 namespace Tgs.GameInterface.SBOService.ViewModels;
 
-public record GameHistoryViewModel
+public record GameWagerViewModel
 {
     [Required]
     public Uri ApiUrl { get; init; } = default!;
@@ -11,7 +11,7 @@ public record GameHistoryViewModel
     [Required]
     public string Agent { get; init; } = default!;
     [Required]
-    public DateTime StartTime { get; init; }
+    public DateTimeOffset StartTime { get; init; }
     [Required]
-    public DateTime EndTime { get; init; }
+    public DateTimeOffset EndTime { get; init; }
 }

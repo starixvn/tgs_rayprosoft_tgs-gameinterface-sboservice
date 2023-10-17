@@ -2,27 +2,25 @@
 using Microsoft.Extensions.Logging.Abstractions;
 using RichardSzalay.MockHttp;
 
-namespace Tgs.GameInterface.SBOService.Core.UnitTest.GameApiClientUnitTest;
+namespace Tgs.GameInterface.SBOService.Core.UnitTest;
 
-[TestClass]
-public class LoginUnitTest
+public class GetPlayerBalanceUnitTest
 {
-    [TestMethod]
+    [Fact]
     public async Task Normal_Process()
     {
         var apiUrl = new Uri("https://ex-api-demo-yy.568win.com/");
         var companyKey = "49ED28A987624CA0A3F834C3B8A69AAB";
         var username = "4ucmqplxkuyd";
-        var portfolio = "SportsBook";
 
-        var url = new Uri(apiUrl, "/web-root/restricted/player/login.aspx");
+        var url = new Uri(apiUrl, "/web-root/restricted/player/get-player-balance.aspx");
 
         var handler = new MockHttpMessageHandler();
         _ = handler
                 .Expect(HttpMethod.Post, url.ToString())
                 .Respond(
                     HttpStatusCode.OK,
-                    new StringContent("{\"url\":\"//virtualsports-winfast888.1StepRich.com/Home/Welcome?gmOnlineId=3458478272&token=8722482.GWxHdvRGmvuwyLRiuBoLDOR\",\"serverId\":\"YY-demoanduat\",\"error\":{\"id\":0,\"msg\":\"No Error\"}}"));
+                    new StringContent("{\"username\":\"4ucmqplxkuyd\",\"currency\":\"CNY\",\"balance\":1,\"outstanding\":0,\"serverId\":\"YY-demoanduat\",\"error\":{\"id\":0,\"msg\":\"No Error\"}}"));
 
         var fakeLog = NullLogger<GameApiClient>.Instance;
         var fakeHttpClient = handler.ToHttpClient();
@@ -31,28 +29,24 @@ public class LoginUnitTest
             fakeLog,
             fakeHttpClient);
 
-        var actual = await client
-                .LoginAsync(
-                   apiUrl,
-                   companyKey,
-                   username,
-                   portfolio)
-               .ConfigureAwait(false);
+        var actual = await client.GetPlayerBalanceAsync(
+            apiUrl: apiUrl,
+            companyKey: companyKey,
+            username: username);
 
-        Assert.IsNotNull(actual);
-        Assert.IsTrue(actual.IsPlayerExist);
-        Assert.IsFalse(string.IsNullOrWhiteSpace(actual.GameUrl));
+        Assert.True(actual.IsPlayerExist);
+        Assert.Equal(1m, actual.Balance);
+        Assert.Equal(0m, actual.Outstanding);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task Player_Does_Not_Exist()
     {
         var apiUrl = new Uri("https://ex-api-demo-yy.568win.com/");
         var companyKey = "49ED28A987624CA0A3F834C3B8A69AAB";
         var username = "4ucmqplxkuyd";
-        var portfolio = "SportsBook";
 
-        var url = new Uri(apiUrl, "/web-root/restricted/player/login.aspx");
+        var url = new Uri(apiUrl, "/web-root/restricted/player/get-player-balance.aspx");
 
         var handler = new MockHttpMessageHandler();
         _ = handler
@@ -68,15 +62,11 @@ public class LoginUnitTest
             fakeLog,
             fakeHttpClient);
 
-        var actual = await client
-                .LoginAsync(
-                   apiUrl,
-                   companyKey,
-                   username,
-                   portfolio)
-               .ConfigureAwait(false);
+        var actual = await client.GetPlayerBalanceAsync(
+            apiUrl: apiUrl,
+            companyKey: companyKey,
+            username: username);
 
-        Assert.IsNotNull(actual);
-        Assert.IsFalse(actual.IsPlayerExist);
+        Assert.False(actual.IsPlayerExist);
     }
 }

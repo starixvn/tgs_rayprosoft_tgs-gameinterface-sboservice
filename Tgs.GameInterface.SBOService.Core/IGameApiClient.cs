@@ -7,7 +7,7 @@ public interface IGameApiClient
     ValueTask RegisterAgentAsync(
         Uri apiUrl,
         string companyKey,
-        string username,
+        string agent,
         string currency,
         int min,
         int max,
@@ -18,7 +18,7 @@ public interface IGameApiClient
     ValueTask<UpdateAgentPresetBetSettingsResponse> UpdateAgentPresetBetSettingsAsync(
         Uri apiUrl,
         string companyKey,
-        string username,
+        string agent,
         int min,
         int max,
         int maxPerMatch,
@@ -78,15 +78,15 @@ public interface IGameApiClient
         Uri apiUrl,
         string companyKey,
         string agent,
-        DateTime startTime,
-        DateTime endTime,
+        DateTimeOffset startTime,
+        DateTimeOffset endTime,
         CancellationToken cancellationToken = default);
 
     IAsyncEnumerable<BetByVirtualSportsResponse> GetBetListByModifyDateAgentByVirtualSportsAsync(
         Uri apiUrl,
         string companyKey,
         string agent,
-        DateTime startTime,
-        DateTime endTime,
+        DateTimeOffset startTime,
+        DateTimeOffset endTime,
         CancellationToken cancellationToken = default);
 }

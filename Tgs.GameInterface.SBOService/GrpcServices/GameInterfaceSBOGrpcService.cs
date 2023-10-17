@@ -1,14 +1,13 @@
 ﻿using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Tgs.GameInterface.SBOService.Core.ApplicationServices;
-using Tgs.GameInterface.SBOService.Core.Models;
 using Tgs.GameInterface.SBOService.Protos;
 using Tgs.ServiceUtility;
 using Enum = System.Enum;
 
 namespace Tgs.GameInterface.SBOService.GrpcServices;
 
-public class GameInterfaceSBOGrpcService : GameInterfaceSBOService.GameInterfaceSBOServiceBase
+public class GameInterfaceSBOGrpcService : GameInterfaceSBO.GameInterfaceSBOBase
 {
     private readonly ILogger<GameInterfaceSBOGrpcService> _logger;
     private readonly ICommandService<AgentPresetBetSettingsCommand> _agentPresetBetSettingsService;
@@ -17,8 +16,8 @@ public class GameInterfaceSBOGrpcService : GameInterfaceSBOService.GameInterface
     private readonly IGetService<FundStatusQuery, bool> _fundStatusService;
     private readonly IGetService<GameUrlBySportsBookQuery, GameUrlResult> _gameUrlBySportsBookService;
     private readonly IGetService<GameUrlByVirtualSportsQuery, GameUrlResult> _gameUrlByVirtualSportsService;
-    private readonly IQueryService<GameHistoryBySportsBookQuery, GameHistoryResult> _gameHistoryBySportsBookService;
-    private readonly IQueryService<GameHistoryByVirtualSportsQuery, GameHistoryResult> _gameHistoryByVirtualSportsService;
+    private readonly IQueryService<GameWagerBySportsBookQuery, GameWagerResult> _gameWagerBySportsBookService;
+    private readonly IQueryService<GameWagerByVirtualSportsQuery, GameWagerResult> _gameWagerByVirtualSportsService;
     private readonly IGetService<PlayerBalanceQuery, PlayerBalanceResult> _playerBalanceService;
     private readonly ICommandService<PlayerCreateCommand> _playerCreateService;
     private readonly ICommandService<PlayerKickCommand> _playerKickService;
@@ -31,8 +30,8 @@ public class GameInterfaceSBOGrpcService : GameInterfaceSBOService.GameInterface
         IGetService<FundStatusQuery, bool> fundStatusService,
         IGetService<GameUrlBySportsBookQuery, GameUrlResult> gameUrlBySportsBookService,
         IGetService<GameUrlByVirtualSportsQuery, GameUrlResult> gameUrlByVirtualSportsService,
-        IQueryService<GameHistoryBySportsBookQuery, GameHistoryResult> gameHistoryBySportsBookService,
-        IQueryService<GameHistoryByVirtualSportsQuery, GameHistoryResult> gameHistoryByVirtualSportsService,
+        IQueryService<GameWagerBySportsBookQuery, GameWagerResult> gameWagerBySportsBookService,
+        IQueryService<GameWagerByVirtualSportsQuery, GameWagerResult> gameWagerByVirtualSportsService,
         IGetService<PlayerBalanceQuery, PlayerBalanceResult> playerBalanceService,
         ICommandService<PlayerCreateCommand> playerCreateService,
         ICommandService<PlayerKickCommand> playerKickService
@@ -45,8 +44,8 @@ public class GameInterfaceSBOGrpcService : GameInterfaceSBOService.GameInterface
         _fundStatusService = fundStatusService ?? throw new ArgumentNullException(nameof(fundStatusService));
         _gameUrlBySportsBookService = gameUrlBySportsBookService ?? throw new ArgumentNullException(nameof(gameUrlBySportsBookService));
         _gameUrlByVirtualSportsService = gameUrlByVirtualSportsService ?? throw new ArgumentNullException(nameof(gameUrlByVirtualSportsService));
-        _gameHistoryBySportsBookService = gameHistoryBySportsBookService ?? throw new ArgumentNullException(nameof(gameHistoryBySportsBookService));
-        _gameHistoryByVirtualSportsService = gameHistoryByVirtualSportsService ?? throw new ArgumentNullException(nameof(gameHistoryByVirtualSportsService));
+        _gameWagerBySportsBookService = gameWagerBySportsBookService ?? throw new ArgumentNullException(nameof(gameWagerBySportsBookService));
+        _gameWagerByVirtualSportsService = gameWagerByVirtualSportsService ?? throw new ArgumentNullException(nameof(gameWagerByVirtualSportsService));
         _playerBalanceService = playerBalanceService ?? throw new ArgumentNullException(nameof(playerBalanceService));
         _playerCreateService = playerCreateService ?? throw new ArgumentNullException(nameof(playerCreateService));
         _playerKickService = playerKickService ?? throw new ArgumentNullException(nameof(playerKickService));
@@ -69,20 +68,19 @@ public class GameInterfaceSBOGrpcService : GameInterfaceSBOService.GameInterface
         ServerCallContext context)
     {
         var command = new AgentPresetBetSettingsCommand(
-            new(request.ApiUrl),
-            request.CompanyKey,
-            request.Username,
-            request.Currency,
-            request.Min,
-            request.Max,
-            request.MaxPerMatch,
-            request.CasinoTableLimit);
+            ApiUrl: new(request.ApiUrl),
+            CompanyKey: request.CompanyKey,
+            Agent: request.Agent,
+            Currency: request.Currency,
+            Min: request.Min,
+            Max: request.Max,
+            MaxPerMatch: request.MaxPerMatch,
+            CasinoTableLimit: request.CasinoTableLimit);
 
-        await _agentPresetBetSettingsService
-                .ExecuteAsync(
-                    command: command,
-                    cancellationToken: context.CancellationToken)
-                .ConfigureAwait(false);
+        await _agentPresetBetSettingsService.ExecuteAsync(
+            command: command,
+            cancellationToken: context.CancellationToken)
+            .ConfigureAwait(false);
 
         return new BaseReply()
         {
@@ -95,17 +93,17 @@ public class GameInterfaceSBOGrpcService : GameInterfaceSBOService.GameInterface
         ServerCallContext context)
     {
         var query = new FundInQuery(
-            new(request.ApiUrl),
-            request.CompanyKey,
-            request.Agent,
-            request.Username,
-            request.Amount);
+            ApiUrl: new(request.ApiUrl),
+            CompanyKey: request.CompanyKey,
+            Agent: request.Agent,
+            PlayerCode: request.PlayerCode,
+            OrderId: request.OrderId,
+            Amount: request.Amount);
 
-        var result = await _fundInService
-                 .GetAsync(
-                     query: query,
-                     cancellationToken: context.CancellationToken)
-                 .ConfigureAwait(false);
+        var result = await _fundInService.GetAsync(
+            query: query,
+            cancellationToken: context.CancellationToken)
+            .ConfigureAwait(false);
 
         return new FundReply()
         {
@@ -119,17 +117,17 @@ public class GameInterfaceSBOGrpcService : GameInterfaceSBOService.GameInterface
         ServerCallContext context)
     {
         var query = new FundOutQuery(
-            new(request.ApiUrl),
-            request.CompanyKey,
-            request.Agent,
-            request.Username,
-            request.Amount);
+            ApiUrl: new(request.ApiUrl),
+            CompanyKey: request.CompanyKey,
+            Agent: request.Agent,
+            PlayerCode: request.PlayerCode,
+            OrderId: request.OrderId,
+            Amount: request.Amount);
 
-        var result = await _fundOutService
-                 .GetAsync(
-                     query: query,
-                     cancellationToken: context.CancellationToken)
-                 .ConfigureAwait(false);
+        var result = await _fundOutService.GetAsync(
+            query: query,
+            cancellationToken: context.CancellationToken)
+            .ConfigureAwait(false);
 
         return new FundReply()
         {
@@ -138,109 +136,108 @@ public class GameInterfaceSBOGrpcService : GameInterfaceSBOService.GameInterface
         };
     }
 
-    public override async Task<FundStatusReply> FundStatus(
+    public override async Task<BaseReply> FundStatus(
         FundStatusRequest request,
         ServerCallContext context)
     {
         var query = new FundStatusQuery(
-            new(request.ApiUrl),
-            request.CompanyKey,
-            request.TxnId);
+            ApiUrl: new(request.ApiUrl),
+            CompanyKey: request.CompanyKey,
+            OrderId: request.OrderId);
 
-        var result = await _fundStatusService
-                 .GetAsync(
-                     query: query,
-                     cancellationToken: context.CancellationToken)
-                 .ConfigureAwait(false);
+        var result = await _fundStatusService.GetAsync(
+            query: query,
+            cancellationToken: context.CancellationToken)
+            .ConfigureAwait(false);
 
-        return new FundStatusReply()
+        return new BaseReply()
         {
-            IsOrderExist = result
+            Status = result
         };
     }
 
-    public override async Task<GameHistoryReply> GameHistoryBySportsBook(
-        GameHistoryRequest request,
+    public override async Task<GameWagerReply> GameWagerBySportsBook(
+        GameWagerRequest request,
         ServerCallContext context)
     {
-        var query = new GameHistoryBySportsBookQuery(
-            new(request.ApiUrl),
-            request.CompanyKey,
-            request.Agent,
-            request.StartTime.ToDateTime(),
-            request.EndTime.ToDateTime());
+        var query = new GameWagerBySportsBookQuery(
+            ApiUrl: new(request.ApiUrl),
+            CompanyKey: request.CompanyKey,
+            Agent: request.Agent,
+            StartTime: request.StartTime.ToDateTimeOffset(),
+            EndTime: request.EndTime.ToDateTimeOffset());
 
-        var gameHistoryResults = await _gameHistoryBySportsBookService
-                 .QueryAsync(
-                     query: query,
-                     cancellationToken: context.CancellationToken)
-                 .ToArrayAsync()
-                 .ConfigureAwait(false);
+        var gameWagers = await _gameWagerBySportsBookService.QueryAsync(
+            query: query,
+            cancellationToken: context.CancellationToken)
+            .ToArrayAsync(
+            cancellationToken: context.CancellationToken)
+            .ConfigureAwait(false);
 
-        var reply = new GameHistoryReply();
+        var reply = new GameWagerReply();
 
-        if (gameHistoryResults.Any())
+        if (gameWagers.Any())
         {
-            foreach (var gameHistoryResult in gameHistoryResults)
+            foreach (var gameWager in gameWagers)
             {
-                reply.Items.Add(new GameHistoryInfo()
+                reply.Items.Add(new GameWagerInfo()
                 {
-                    PlayerCode = gameHistoryResult.PlayerCode,
-                    ExternalRoundId = gameHistoryResult.ExternalRoundId,
-                    ExternalGameId = gameHistoryResult.ExternalGameId,
-                    Status = (GameHistoryStatus)Enum.Parse(typeof(GameHistoryStatus), gameHistoryResult.Status, true),
-                    ExternalCreatedOn = gameHistoryResult.ExternalCreatedOn.ToTimestamp(),
-                    ExternalClosedOn = gameHistoryResult.ExternalClosedOn.ToTimestamp(),
-                    Bet = gameHistoryResult.Bet,
-                    ValidBet = gameHistoryResult.ValidBet,
-                    PlayerWinLoss = gameHistoryResult.PlayerWinLoss,
-                    Turnover = gameHistoryResult.Turnover,
-                    Settle = gameHistoryResult.Settle,
-                    AdditionalData = gameHistoryResult.AdditionalData
+                    PlayerCode = gameWager.PlayerCode,
+                    ExternalWagerId = gameWager.ExternalWagerId,
+                    ExternalGameId = gameWager.ExternalGameId,
+                    Status = (GameHistoryStatus)Enum.Parse(typeof(GameHistoryStatus), gameWager.Status, true),
+                    ExternalCreatedOn = gameWager.ExternalCreatedOn.ToTimestamp(),
+                    ExternalClosedOn = gameWager.ExternalClosedOn.ToTimestamp(),
+                    Bet = gameWager.Bet,
+                    ValidBet = gameWager.ValidBet,
+                    PlayerWinLoss = gameWager.PlayerWinLoss,
+                    Turnover = gameWager.Turnover,
+                    Settle = gameWager.Settle,
+                    AdditionalData = gameWager.AdditionalData
                 });
             }
         }
         return reply;
     }
 
-    public override async Task<GameHistoryReply> GameHistoryByVirtualSports(
-        GameHistoryRequest request,
+    public override async Task<GameWagerReply> GameWagerByVirtualSports(
+        GameWagerRequest request,
         ServerCallContext context)
     {
-        var query = new GameHistoryByVirtualSportsQuery(
-            new(request.ApiUrl),
-            request.CompanyKey,
-            request.Agent,
-            request.StartTime.ToDateTime(),
-            request.EndTime.ToDateTime());
+        var query = new GameWagerByVirtualSportsQuery(
+            ApiUrl: new(request.ApiUrl),
+            CompanyKey: request.CompanyKey,
+            Agent: request.Agent,
+            StartTime: request.StartTime.ToDateTimeOffset(),
+            EndTime: request.EndTime.ToDateTimeOffset());
 
-        var gameHistoryResults = await _gameHistoryByVirtualSportsService
-                 .QueryAsync(
-                     query: query,
-                     cancellationToken: context.CancellationToken)
-                 .ToArrayAsync()
-                 .ConfigureAwait(false);
+        var gameWagers = await _gameWagerByVirtualSportsService.QueryAsync(
+            query: query,
+            cancellationToken: context.CancellationToken)
+            .ToArrayAsync(
+            cancellationToken: context.CancellationToken)
+            .ConfigureAwait(false);
 
-        var reply = new GameHistoryReply();
+        var reply = new GameWagerReply();
 
-        if (gameHistoryResults.Any())
+        if (gameWagers.Any())
         {
-            foreach (var gameHistoryResult in gameHistoryResults)
+            foreach (var gameWager in gameWagers)
             {
-                reply.Items.Add(new GameHistoryInfo()
+                reply.Items.Add(new GameWagerInfo()
                 {
-                    PlayerCode = gameHistoryResult.PlayerCode,
-                    ExternalRoundId = gameHistoryResult.ExternalRoundId,
-                    ExternalGameId = gameHistoryResult.ExternalGameId,
-                    Status = (GameHistoryStatus)Enum.Parse(typeof(GameHistoryStatus), gameHistoryResult.Status, true),
-                    ExternalCreatedOn = gameHistoryResult.ExternalCreatedOn.ToTimestamp(),
-                    ExternalClosedOn = gameHistoryResult.ExternalClosedOn.ToTimestamp(),
-                    Bet = gameHistoryResult.Bet,
-                    ValidBet = gameHistoryResult.ValidBet,
-                    PlayerWinLoss = gameHistoryResult.PlayerWinLoss,
-                    Turnover = gameHistoryResult.Turnover,
-                    Settle = gameHistoryResult.Settle,
-                    AdditionalData = gameHistoryResult.AdditionalData
+                    PlayerCode = gameWager.PlayerCode,
+                    ExternalWagerId = gameWager.ExternalWagerId,
+                    ExternalGameId = gameWager.ExternalGameId,
+                    Status = (GameHistoryStatus)Enum.Parse(typeof(GameHistoryStatus), gameWager.Status, true),
+                    ExternalCreatedOn = gameWager.ExternalCreatedOn.ToTimestamp(),
+                    ExternalClosedOn = gameWager.ExternalClosedOn.ToTimestamp(),
+                    Bet = gameWager.Bet,
+                    ValidBet = gameWager.ValidBet,
+                    PlayerWinLoss = gameWager.PlayerWinLoss,
+                    Turnover = gameWager.Turnover,
+                    Settle = gameWager.Settle,
+                    AdditionalData = gameWager.AdditionalData
                 });
             }
         }
@@ -252,18 +249,17 @@ public class GameInterfaceSBOGrpcService : GameInterfaceSBOService.GameInterface
         ServerCallContext context)
     {
         var query = new GameUrlBySportsBookQuery(
-            new(request.ApiUrl),
-            request.CompanyKey,
-            request.Agent,
-            request.Username,
-            request.Lang,
-            request.IsMobile);
+            ApiUrl: new(request.ApiUrl),
+            CompanyKey: request.CompanyKey,
+            Agent: request.Agent,
+            PlayerCode: request.PlayerCode,
+            Lang: request.Lang,
+            IsMobile: request.IsMobile);
 
-        var result = await _gameUrlBySportsBookService
-                 .GetAsync(
-                     query: query,
-                     cancellationToken: context.CancellationToken)
-                 .ConfigureAwait(false);
+        var result = await _gameUrlBySportsBookService.GetAsync(
+            query: query,
+            cancellationToken: context.CancellationToken)
+            .ConfigureAwait(false);
 
         return new GameUrlReply()
         {
@@ -277,17 +273,16 @@ public class GameInterfaceSBOGrpcService : GameInterfaceSBOService.GameInterface
         ServerCallContext context)
     {
         var query = new GameUrlByVirtualSportsQuery(
-            new(request.ApiUrl),
-            request.CompanyKey,
-            request.Agent,
-            request.Username,
-            request.Lang);
+            ApiUrl: new(request.ApiUrl),
+            CompanyKey: request.CompanyKey,
+            Agent: request.Agent,
+            PlayerCode: request.PlayerCode,
+            Lang: request.Lang);
 
-        var result = await _gameUrlByVirtualSportsService
-                 .GetAsync(
-                     query: query,
-                     cancellationToken: context.CancellationToken)
-                 .ConfigureAwait(false);
+        var result = await _gameUrlByVirtualSportsService.GetAsync(
+            query: query,
+            cancellationToken: context.CancellationToken)
+            .ConfigureAwait(false);
 
         return new GameUrlReply()
         {
@@ -301,16 +296,15 @@ public class GameInterfaceSBOGrpcService : GameInterfaceSBOService.GameInterface
         ServerCallContext context)
     {
         var query = new PlayerBalanceQuery(
-            new(request.ApiUrl),
-            request.CompanyKey,
-            request.Agent,
-            request.Username);
+            ApiUrl: new(request.ApiUrl),
+            CompanyKey: request.CompanyKey,
+            Agent: request.Agent,
+            PlayerCode: request.PlayerCode);
 
-        var result = await _playerBalanceService
-                 .GetAsync(
-                     query: query,
-                     cancellationToken: context.CancellationToken)
-                 .ConfigureAwait(false);
+        var result = await _playerBalanceService.GetAsync(
+            query: query,
+            cancellationToken: context.CancellationToken)
+            .ConfigureAwait(false);
 
         return new PlayerBalanceReply()
         {
@@ -326,15 +320,15 @@ public class GameInterfaceSBOGrpcService : GameInterfaceSBOService.GameInterface
         ServerCallContext context)
     {
         var command = new PlayerCreateCommand(
-            new(request.ApiUrl),
-            request.CompanyKey,
-            request.Agent,
-            request.Username);
+            ApiUrl: new(request.ApiUrl),
+            CompanyKey: request.CompanyKey,
+            Agent: request.Agent,
+            PlayerCode: request.PlayerCode);
 
-        await _playerCreateService
-                .ExecuteAsync(
-                     command: command)
-                 .ConfigureAwait(false);
+        await _playerCreateService.ExecuteAsync(
+            command: command,
+            cancellationToken: context.CancellationToken)
+            .ConfigureAwait(false);
 
         return new BaseReply()
         {
@@ -347,15 +341,15 @@ public class GameInterfaceSBOGrpcService : GameInterfaceSBOService.GameInterface
         ServerCallContext context)
     {
         var command = new PlayerKickCommand(
-            new(request.ApiUrl),
-            request.CompanyKey,
-            request.Agent,
-            request.Username);
+            ApiUrl: new(request.ApiUrl),
+            CompanyKey: request.CompanyKey,
+            Agent: request.Agent,
+            PlayerCode: request.PlayerCode);
 
-        await _playerKickService
-                .ExecuteAsync(
-                     command: command)
-                 .ConfigureAwait(false);
+        await _playerKickService.ExecuteAsync(
+            command: command,
+            cancellationToken: context.CancellationToken)
+            .ConfigureAwait(false);
 
         return new BaseReply()
         {

@@ -3,4 +3,4 @@
 public record FundStatusQuery(
     Uri ApiUrl,
     string CompanyKey,
-    string TxnId);
+    string OrderId);

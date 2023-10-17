@@ -5,23 +5,27 @@ namespace Tgs.GameInterface.SBOService.Core.ApplicationServices;
 internal class PlayerBalanceGetService : IGetService<PlayerBalanceQuery, PlayerBalanceResult>
 {
     private readonly IGameApiClient _client;
+    private readonly IUserNameUtensils _userNameUtensils;
 
-    public PlayerBalanceGetService(IGameApiClient client)
+    public PlayerBalanceGetService(
+        IGameApiClient client,
+        IUserNameUtensils userNameUtensils)
     {
         _client = client ?? throw new ArgumentNullException(nameof(client));
+        _userNameUtensils = userNameUtensils ?? throw new ArgumentNullException(nameof(userNameUtensils));
     }
 
     public async ValueTask<PlayerBalanceResult> GetAsync(
         PlayerBalanceQuery query,
         CancellationToken cancellationToken = default)
     {
-        var username = $"{query.Agent.Split('_')[0]}_{query.Username}";
-        var response = await _client
-            .GetPlayerBalanceAsync(
-                query.ApiUrl,
-                query.CompanyKey,
-                username,
-                cancellationToken)
+        var username = _userNameUtensils.GetUserName(query.Agent, query.PlayerCode);
+
+        var response = await _client.GetPlayerBalanceAsync(
+            apiUrl: query.ApiUrl,
+            companyKey: query.CompanyKey,
+            username: username,
+            cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
         return new PlayerBalanceResult
@@ -29,7 +33,6 @@ internal class PlayerBalanceGetService : IGetService<PlayerBalanceQuery, PlayerB
             IsPlayerExist = response.IsPlayerExist,
             Balance = response.Balance,
             OutstandingBalance = response.Outstanding
-
         };
     }
 }

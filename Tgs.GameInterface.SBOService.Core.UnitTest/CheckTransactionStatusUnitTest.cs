@@ -3,12 +3,11 @@ using Microsoft.Extensions.Logging.Abstractions;
 using RichardSzalay.MockHttp;
 using Tgs.GameInterface.SBOService.Core.Exceptions;
 
-namespace Tgs.GameInterface.SBOService.Core.UnitTest.GameApiClientUnitTest;
+namespace Tgs.GameInterface.SBOService.Core.UnitTest;
 
-[TestClass]
 public class CheckTransactionStatusUnitTest
 {
-    [TestMethod]
+    [Fact]
     public async Task Normal_Process()
     {
         var apiUrl = new Uri("https://ex-api-demo-yy.568win.com/");
@@ -31,18 +30,15 @@ public class CheckTransactionStatusUnitTest
             fakeLog,
             fakeHttpClient);
 
-        var actual = await client
-                .CheckTransactionStatusAsync(
-                     apiUrl,
-                     companyKey,
-                     txnId)
-                .ConfigureAwait(false);
+        var actual = await client.CheckTransactionStatusAsync(
+            apiUrl: apiUrl,
+            companyKey: companyKey,
+            txnId: txnId);
 
-        Assert.IsNotNull(actual);
-        Assert.IsTrue(actual);
+        Assert.True(actual);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task Trade_Order_Does_Not_Exist()
     {
         var apiUrl = new Uri("https://ex-api-demo-yy.568win.com/");
@@ -65,13 +61,10 @@ public class CheckTransactionStatusUnitTest
             fakeLog,
             fakeHttpClient);
 
-        _ = await Assert.ThrowsExceptionAsync<GameProvisioningErrorException>(async ()
-            => await client
-                .CheckTransactionStatusAsync(
-                    apiUrl,
-                    companyKey,
-                    txnId)
-                .ConfigureAwait(false))
-            .ConfigureAwait(false);
+        _ = await Assert.ThrowsAsync<GameProvisioningErrorException>(()
+            => client.CheckTransactionStatusAsync(
+                apiUrl: apiUrl,
+                companyKey: companyKey,
+                txnId: txnId).AsTask());
     }
 }

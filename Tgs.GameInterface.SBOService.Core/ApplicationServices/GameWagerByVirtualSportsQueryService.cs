@@ -1,34 +1,31 @@
-﻿using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text.Json;
-using Tgs.GameInterface.SBOService.Core.Models;
+﻿using System.Runtime.CompilerServices;
 using Tgs.ServiceUtility;
 
 namespace Tgs.GameInterface.SBOService.Core.ApplicationServices;
 
-internal class GameHistoryBySportsBookQueryService : IQueryService<GameHistoryBySportsBookQuery, GameHistoryResult>
+internal class GameWagerByVirtualSportsQueryService : IQueryService<GameWagerByVirtualSportsQuery, GameWagerResult>
 {
     private readonly IGameApiClient _client;
 
-    public GameHistoryBySportsBookQueryService(IGameApiClient client)
+    public GameWagerByVirtualSportsQueryService(IGameApiClient client)
     {
         _client = client ?? throw new ArgumentNullException(nameof(client));
     }
 
-    public async IAsyncEnumerable<GameHistoryResult> QueryAsync(
-        GameHistoryBySportsBookQuery query,
+    public async IAsyncEnumerable<GameWagerResult> QueryAsync(
+        GameWagerByVirtualSportsQuery query,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        var responses = await _client
-                .GetBetListByModifyDateAgentBySportsBookAsync(
-                    query.ApiUrl,
-                    query.CompanyKey,
-                    query.Agent,
-                    query.StartTime,
-                    query.EndTime,
-                    cancellationToken)
-                .ToArrayAsync(cancellationToken)
-                .ConfigureAwait(false);
+        var responses = await _client.GetBetListByModifyDateAgentByVirtualSportsAsync(
+            apiUrl: query.ApiUrl,
+            companyKey: query.CompanyKey,
+            agent: query.Agent,
+            startTime: query.StartTime,
+            endTime: query.EndTime,
+            cancellationToken: cancellationToken)
+        .ToArrayAsync(
+            cancellationToken: cancellationToken)
+        .ConfigureAwait(false);
 
         /*
          * 您好，请见以下分类，谢谢您。
@@ -50,10 +47,10 @@ internal class GameHistoryBySportsBookQueryService : IQueryService<GameHistoryBy
             x.Status.Equals("lose", StringComparison.OrdinalIgnoreCase) ||
             x.Status.Equals("won", StringComparison.OrdinalIgnoreCase) ||
             x.Status.Equals("void", StringComparison.OrdinalIgnoreCase))
-            .Select(x => new GameHistoryResult(
+            .Select(x => new GameWagerResult(
                 PlayerCode: x.PlayerCode,
-                ExternalRoundId: x.ExternalRoundId,
-                ExternalGameId: x.SportsType,
+                ExternalWagerId: x.ExternalWagerId,
+                ExternalGameId: x.ProductType,
                 Status: x.Status,
                 ExternalCreatedOn: x.OrderTime,
                 ExternalClosedOn: x.SettleTime,

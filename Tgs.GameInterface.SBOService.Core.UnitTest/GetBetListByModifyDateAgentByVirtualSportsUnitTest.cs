@@ -2,12 +2,11 @@
 using Microsoft.Extensions.Logging.Abstractions;
 using RichardSzalay.MockHttp;
 
-namespace Tgs.GameInterface.SBOService.Core.UnitTest.GameApiClientUnitTest;
+namespace Tgs.GameInterface.SBOService.Core.UnitTest;
 
-[TestClass]
 public class GetBetListByModifyDateAgentByVirtualSportsUnitTest
 {
-    [TestMethod]
+    [Fact]
     public async Task Normal_Process()
     {
         var apiUrl = new Uri("https://ex-api-demo-yy.568win.com/");
@@ -32,23 +31,20 @@ public class GetBetListByModifyDateAgentByVirtualSportsUnitTest
             fakeLog,
             fakeHttpClient);
 
-        var actual = await client
-                  .GetBetListByModifyDateAgentByVirtualSportsAsync(
-                      apiUrl,
-                      companyKey,
-                      agent,
-                      startTime,
-                      endTime)
-                 .ToArrayAsync()
-                 .ConfigureAwait(false);
+        var actual = await client.GetBetListByModifyDateAgentByVirtualSportsAsync(
+            apiUrl: apiUrl,
+            companyKey: companyKey,
+            agent: agent,
+            startTime: startTime,
+            endTime: endTime)
+            .ToArrayAsync();
 
-        Assert.IsNotNull(actual);
-        Assert.IsTrue(actual.Any());
-        Assert.AreEqual("4ucmqplxkuyd", actual[0].PlayerCode);
-        Assert.AreEqual("B2683156", actual[0].ExternalRoundId);
+        Assert.True(actual.Any());
+        Assert.Equal("4ucmqplxkuyd", actual[0].PlayerCode);
+        Assert.Equal("B2683156", actual[0].ExternalWagerId);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task Normal_Process_Unsettlement()
     {
         var apiUrl = new Uri("https://ex-api-demo-yy.568win.com/");
@@ -73,20 +69,17 @@ public class GetBetListByModifyDateAgentByVirtualSportsUnitTest
             fakeLog,
             fakeHttpClient);
 
-        var actual = await client
-                  .GetBetListByModifyDateAgentByVirtualSportsAsync(
-                      apiUrl,
-                      companyKey,
-                      agent,
-                      startTime,
-                      endTime)
-                 .ToArrayAsync()
-                 .ConfigureAwait(false);
+        var actual = await client.GetBetListByModifyDateAgentByVirtualSportsAsync(
+            apiUrl: apiUrl,
+            companyKey: companyKey,
+            agent: agent,
+            startTime: startTime,
+            endTime: endTime)
+            .ToArrayAsync();
 
-        Assert.IsNotNull(actual);
-        Assert.IsTrue(actual.Any());
-        Assert.AreEqual("4ucmqplxkuyd", actual[0].PlayerCode);
-        Assert.AreEqual("B2683157", actual[0].ExternalRoundId);
-        Assert.AreEqual("running", actual[0].Status);
+        Assert.True(actual.Any());
+        Assert.Equal("4ucmqplxkuyd", actual[0].PlayerCode);
+        Assert.Equal("B2683157", actual[0].ExternalWagerId);
+        Assert.Equal("running", actual[0].Status);
     }
 }

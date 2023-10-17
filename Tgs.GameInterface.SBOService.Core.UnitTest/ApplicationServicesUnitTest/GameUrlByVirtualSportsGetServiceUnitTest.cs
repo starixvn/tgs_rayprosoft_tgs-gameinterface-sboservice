@@ -4,13 +4,13 @@ using Tgs.GameInterface.SBOService.Core.Models;
 
 namespace Tgs.GameInterface.SBOService.Core.UnitTest.ApplicationServicesUnitTest;
 
-[TestClass]
 public class GameUrlByVirtualSportsGetServiceUnitTest
 {
-    [TestMethod]
+    [Fact]
     public async Task Normal_Process()
     {
         var fakeGameApiClient = Substitute.For<IGameApiClient>();
+        var fakeUserNameUtensils = Substitute.For<IUserNameUtensils>();
 
         var query = new GameUrlByVirtualSportsQuery(
             new Uri("https://ex-api-demo-yy.568win.com/"),
@@ -19,29 +19,32 @@ public class GameUrlByVirtualSportsGetServiceUnitTest
             "4ucmqplxkuyd",
             "en");
 
+        var username = "STAG_4ucmqplxkuyd";
+        _ = fakeUserNameUtensils.GetUserName(
+            Arg.Is(query.Agent),
+            Arg.Is(query.PlayerCode))
+            .Returns(username);
+
         var response = new LoginResponse()
         {
             IsPlayerExist = true,
             GameUrl = "//sports-test.mydomain.com/welcome2.aspx?token=15433.sWRjsIETIDMjlZVTnzdQMNpV"
         };
 
-        _ = fakeGameApiClient
-             .LoginAsync(
-                Arg.Is(query.ApiUrl),
-                Arg.Is(query.CompanyKey),
-                Arg.Is($"{query.Agent.Split('_')[0]}_{query.Username}"),
-                Arg.Is("VirtualSports"))
+        _ = fakeGameApiClient.LoginAsync(
+            apiUrl: Arg.Is(query.ApiUrl),
+            companyKey: Arg.Is(query.CompanyKey),
+            username: Arg.Is(username),
+            portfolio: Arg.Is("VirtualSports"))
              .Returns(response);
 
-        var service = new GameUrlByVirtualSportsGetService(fakeGameApiClient);
+        var service = new GameUrlByVirtualSportsGetService(
+            fakeGameApiClient,
+            fakeUserNameUtensils);
 
-        var actual = await service
-                .GetAsync(
-                    query)
-                .ConfigureAwait(false);
+        var actual = await service.GetAsync(query);
 
-        Assert.IsNotNull(actual);
-        Assert.IsTrue(actual.IsPlayerExist);
-        Assert.AreEqual($"https:{response.GameUrl}&lang={query.Lang}", actual.GameUrl);
+        Assert.True(actual.IsPlayerExist);
+        Assert.Equal($"https:{response.GameUrl}&lang={query.Lang}", actual.GameUrl);
     }
 }

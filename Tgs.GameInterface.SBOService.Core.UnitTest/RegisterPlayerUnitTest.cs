@@ -3,12 +3,11 @@ using Microsoft.Extensions.Logging.Abstractions;
 using RichardSzalay.MockHttp;
 using Tgs.GameInterface.SBOService.Core.Exceptions;
 
-namespace Tgs.GameInterface.SBOService.Core.UnitTest.GameApiClientUnitTest;
+namespace Tgs.GameInterface.SBOService.Core.UnitTest;
 
-[TestClass]
 public class RegisterPlayerUnitTest
 {
-    [TestMethod]
+    [Fact]
     public async Task Normal_Process()
     {
         var apiUrl = new Uri("https://ex-api-demo-yy.568win.com/");
@@ -20,10 +19,10 @@ public class RegisterPlayerUnitTest
 
         var handler = new MockHttpMessageHandler();
         _ = handler
-                .Expect(HttpMethod.Post, url.ToString())
-                .Respond(
-                    HttpStatusCode.OK,
-                    new StringContent("{\"serverId\":\"YY-demoanduat\",\"error\":{\"id\":0,\"msg\":\"No Error\"}}"));
+            .Expect(HttpMethod.Post, url.ToString())
+            .Respond(
+            HttpStatusCode.OK,
+            new StringContent("{\"serverId\":\"YY-demoanduat\",\"error\":{\"id\":0,\"msg\":\"No Error\"}}"));
 
         var fakeLog = NullLogger<GameApiClient>.Instance;
         var fakeHttpClient = handler.ToHttpClient();
@@ -32,16 +31,14 @@ public class RegisterPlayerUnitTest
             fakeLog,
             fakeHttpClient);
 
-        await client
-            .RegisterPlayerAsync(
-                apiUrl,
-                companyKey,
-                username,
-                agent)
-            .ConfigureAwait(false);
+        await client.RegisterPlayerAsync(
+            apiUrl: apiUrl,
+            companyKey: companyKey,
+            username: username,
+            agent: agent);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task Agent_Does_Not_Exist()
     {
         var apiUrl = new Uri("https://ex-api-demo-yy.568win.com/");
@@ -65,19 +62,16 @@ public class RegisterPlayerUnitTest
             fakeLog,
             fakeHttpClient);
 
-        _ = await Assert.ThrowsExceptionAsync<GameProvisioningErrorException>(async () =>
-        {
-            await client
-                .RegisterPlayerAsync(
-                    apiUrl,
-                    companyKey,
-                    username,
-                    agent)
-                .ConfigureAwait(false);
-        }).ConfigureAwait(false);
+        _ = await Assert.ThrowsAsync<GameProvisioningErrorException>
+            (() => client.RegisterPlayerAsync(
+                apiUrl: apiUrl,
+                companyKey: companyKey,
+                username: username,
+                agent: agent)
+            .AsTask());
     }
 
-    [TestMethod]
+    [Fact]
     public async Task Player_Already_Exists()
     {
         var apiUrl = new Uri("https://ex-api-demo-yy.568win.com/");
@@ -101,12 +95,10 @@ public class RegisterPlayerUnitTest
             fakeLog,
             fakeHttpClient);
 
-        await client
-            .RegisterPlayerAsync(
-                apiUrl,
-                companyKey,
-                username,
-                agent)
-            .ConfigureAwait(false);
+        await client.RegisterPlayerAsync(
+            apiUrl: apiUrl,
+            companyKey: companyKey,
+            username: username,
+            agent: agent);
     }
 }

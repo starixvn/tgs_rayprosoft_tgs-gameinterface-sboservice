@@ -1,4 +1,4 @@
-﻿namespace Tgs.GameInterface.SBOService.Core;
+﻿namespace Tgs.GameInterface.SBOService.Core.Extensions;
 
 public static class StringExtensions
 {

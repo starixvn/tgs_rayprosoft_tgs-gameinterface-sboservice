@@ -5,10 +5,10 @@ import "google/protobuf/timestamp.proto";
 
 option csharp_namespace = "Tgs.GameInterface.SBOService.Protos";
 
-package gameinterfacesboservice;
+package gameinterfacesbo;
 
 // The greeting service definition.
-service GameInterfaceSBOService {
+service GameInterfaceSBO {
   // Sends a greeting
   rpc AgentPresetBetSettings(AgentPresetBetSettingsRequest) returns (BaseReply);
   rpc PlayerBalance (PlayerBalanceRequest) returns (PlayerBalanceReply);
@@ -16,11 +16,11 @@ service GameInterfaceSBOService {
   rpc PlayerKick (PlayerKickRequest) returns (BaseReply);
   rpc FundOut(FundRequest) returns (FundReply);
   rpc FundIn (FundRequest) returns (FundReply);
-  rpc FundStatus(FundStatusRequest) returns (FundStatusReply);
+  rpc FundStatus(FundStatusRequest) returns (BaseReply);
   rpc GameUrlBySportsBook (GameUrlBySportsBookRequest) returns (GameUrlReply);
   rpc GameUrlByVirtualSports (GameUrlByVirtualSportsRequest) returns (GameUrlReply);
-  rpc GameHistoryBySportsBook (GameHistoryRequest) returns (GameHistoryReply);
-  rpc GameHistoryByVirtualSports  (GameHistoryRequest) returns (GameHistoryReply);
+  rpc GameWagerBySportsBook (GameWagerRequest) returns (GameWagerReply);
+  rpc GameWagerByVirtualSports  (GameWagerRequest) returns (GameWagerReply);
   rpc CheckingService(CheckingServiceRequest) returns (CheckingServiceReply);
 }
 
@@ -28,7 +28,7 @@ service GameInterfaceSBOService {
 message AgentPresetBetSettingsRequest{
 	string api_url = 1;
 	string company_key = 2;
-	string username = 3;
+	string agent = 3;
 	string currency = 4;
 	int32 min = 5;
 	int32 max = 6;
@@ -40,42 +40,43 @@ message PlayerBalanceRequest {
 	string api_url = 1;
 	string company_key = 2;
 	string agent = 3;
-	string username= 4;
+	string player_code= 4;
 }
 
 message PlayerCreateRequest {
 	string api_url = 1;
 	string company_key = 2;
 	string agent = 3;
-	string username= 4;
+	string player_code= 4;
 }
 
 message PlayerKickRequest {
 	string api_url = 1;
 	string company_key = 2;
 	string agent = 3;
-	string username= 4;
+	string player_code= 4;
 }
 
 message FundRequest {
 	string api_url = 1;
 	string company_key = 2;
 	string agent = 3;
-	string username= 4;
-	phoenix.protobuf.DecimalValue amount = 5;
+	string player_code= 4;
+	string order_id = 5;
+	phoenix.protobuf.DecimalValue amount = 6;
 }
 
 message FundStatusRequest {
 	string api_url = 1;
 	string company_key = 2;
-	string txn_id = 3;
+	string order_id = 3;
 }
 
 message GameUrlBySportsBookRequest {
 	string api_url = 1;
 	string company_key = 2;
 	string agent = 3;
-	string username= 4;
+	string player_code= 4;
 	string lang = 5;
 	bool is_mobile = 6;
 }
@@ -84,11 +85,11 @@ message GameUrlByVirtualSportsRequest {
 	string api_url = 1;
 	string company_key = 2;
 	string agent = 3;
-	string username= 4;
+	string player_code= 4;
 	string lang = 5;
 }
 
-message GameHistoryRequest {
+message GameWagerRequest {
 	string api_url = 1;
 	string company_key = 2;
 	string agent = 3;
@@ -117,22 +118,18 @@ message FundReply {
     string resp = 2;
 }
 
-message FundStatusReply {
-	bool is_order_exist = 1;
-}
-
 message GameUrlReply {
 	bool is_player_exist = 1;
 	string game_url = 2;
 }
 
-message GameHistoryReply {
-	repeated GameHistoryInfo items = 1;
+message GameWagerReply {
+	repeated GameWagerInfo items = 1;
 }
 
-message GameHistoryInfo {
+message GameWagerInfo {
 	string player_code = 1;
-	string external_round_id = 2;
+	string external_wager_id = 2;
     string external_game_id = 3;
 	GameHistoryStatus status = 4;
 	google.protobuf.Timestamp external_created_on = 5;

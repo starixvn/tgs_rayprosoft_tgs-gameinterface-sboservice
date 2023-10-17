@@ -3,13 +3,13 @@ using Tgs.GameInterface.SBOService.Core.ApplicationServices;
 
 namespace Tgs.GameInterface.SBOService.Core.UnitTest.ApplicationServicesUnitTest;
 
-[TestClass]
 public class PlayerCreateGetServiceUnitTest
 {
-    [TestMethod]
+    [Fact]
     public async Task Normal_Process()
     {
         var fakeGameApiClient = Substitute.For<IGameApiClient>();
+        var fakeUserNameUtensils = Substitute.For<IUserNameUtensils>();
 
         var command = new PlayerCreateCommand(
             new Uri("https://ex-api-demo-yy.568win.com/"),
@@ -17,18 +17,24 @@ public class PlayerCreateGetServiceUnitTest
             "4ucmqplxkuyd",
             "STAG_GPI_CNY");
 
+        var username = "STAG_4ucmqplxkuyd";
+        _ = fakeUserNameUtensils.GetUserName(
+            agent: Arg.Is(command.Agent),
+            playerCode: Arg.Is(command.PlayerCode))
+            .Returns(username);
+
+        var service = new PlayerCreateCommandService(
+            fakeGameApiClient,
+            fakeUserNameUtensils);
+
+        await service.ExecuteAsync(command);
+
         _ = fakeGameApiClient
-             .RegisterPlayerAsync(
-                Arg.Is(command.ApiUrl),
-                Arg.Is(command.CompanyKey),
-                Arg.Is($"{command.Agent.Split('_')[0]}_{command.Username}"),
-                Arg.Is(command.Agent));
-
-        var service = new PlayerCreateCommandService(fakeGameApiClient);
-
-        await service
-            .ExecuteAsync(
-                command)
-            .ConfigureAwait(false);
+            .Received(1)
+            .RegisterPlayerAsync(
+            apiUrl: Arg.Is(command.ApiUrl),
+            companyKey: Arg.Is(command.CompanyKey),
+            username: Arg.Is(username),
+            agent: Arg.Is(command.Agent));
     }
 }

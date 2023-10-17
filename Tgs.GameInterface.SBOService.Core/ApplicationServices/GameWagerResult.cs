@@ -1,12 +1,10 @@
-﻿using Tgs.GameInterface.SBOService.Protos;
+﻿namespace Tgs.GameInterface.SBOService.Core.ApplicationServices;
 
-namespace Tgs.GameInterface.SBOService.ViewModels;
-
-public record GameHistoryResultViewModel(
+public record GameWagerResult(
     string PlayerCode,
-    string ExternalRoundId,
+    string ExternalWagerId,
     string ExternalGameId,
-    GameHistoryStatus Status,
+    string Status,
     DateTimeOffset ExternalCreatedOn,
     DateTimeOffset ExternalClosedOn,
     decimal Bet,

@@ -3,10 +3,9 @@ using Tgs.GameInterface.SBOService.Core.ApplicationServices;
 
 namespace Tgs.GameInterface.SBOService.Core.UnitTest.ApplicationServicesUnitTest;
 
-[TestClass]
 public class FundStatusGetServiceUnitTest
 {
-    [TestMethod]
+    [Fact]
     public async Task Normal_Process()
     {
         var fakeGameApiClient = Substitute.For<IGameApiClient>();
@@ -16,21 +15,16 @@ public class FundStatusGetServiceUnitTest
             "49ED28A987624CA0A3F834C3B8A69AAB",
             Guid.NewGuid().ToString("N"));
 
-        _ = fakeGameApiClient
-             .CheckTransactionStatusAsync(
-                Arg.Is(query.ApiUrl),
-                Arg.Is(query.CompanyKey),
-                Arg.Is(query.TxnId))
-             .Returns(true);
+        _ = fakeGameApiClient.CheckTransactionStatusAsync(
+            apiUrl: Arg.Is(query.ApiUrl),
+            companyKey: Arg.Is(query.CompanyKey),
+            txnId: Arg.Is(query.OrderId))
+            .Returns(true);
 
         var service = new FundStatusGetService(fakeGameApiClient);
 
-        var actual = await service
-                .GetAsync(
-                    query)
-                .ConfigureAwait(false);
+        var actual = await service.GetAsync(query);
 
-        Assert.IsNotNull(actual);
-        Assert.IsTrue(actual);
+        Assert.True(actual);
     }
 }

@@ -1,52 +1,51 @@
 ﻿using System.Text.Json.Nodes;
 using NSubstitute;
-using Snowflake;
 using Tgs.GameInterface.SBOService.Core.ApplicationServices;
 using Tgs.GameInterface.SBOService.Core.Models;
 
 namespace Tgs.GameInterface.SBOService.Core.UnitTest.ApplicationServicesUnitTest;
 
-[TestClass]
 public class FundOutGetServiceUnitTest
 {
-    [TestMethod]
+    [Fact]
     public async Task Normal_Process()
     {
         var fakeGameApiClient = Substitute.For<IGameApiClient>();
-        var fakeSnowFlake = new SnowFlake(datacenterId: 1, machineId: 1);
+        var fakeUserNameUtensils = Substitute.For<IUserNameUtensils>();
 
         var query = new FundOutQuery(
             new Uri("https://ex-api-demo-yy.568win.com/"),
             "49ED28A987624CA0A3F834C3B8A69AAB",
             "STAG_GPI_CNY",
             "4ucmqplxkuyd",
+            "D3100246965624246272",
             1);
 
-        var response = new TransactionResponse(
-            TxnId: "123465",
-            Resp: new JsonObject { ["TxnId"] = "123456" }.ToJsonString()  );
+        var username = "STAG_4ucmqplxkuyd";
+        _ = fakeUserNameUtensils.GetUserName(
+            agent: Arg.Is(query.Agent),
+            playerCode: Arg.Is(query.PlayerCode))
+            .Returns(username);
 
-        _ = fakeGameApiClient
-             .DepositAsync(
-                Arg.Is(query.ApiUrl),
-                Arg.Is(query.CompanyKey),
-                Arg.Is($"{query.Agent.Split('_')[0]}_{query.Username}"),
-                Arg.Any<string>(),
-                Arg.Is(query.Amount),
-                Arg.Any<CancellationToken>())
+        var response = new TransactionResponse(
+            TxnId: "D3100246965624246272",
+            Resp: new JsonObject { ["TxnId"] = "D3100246965624246272" }.ToJsonString());
+        _ = fakeGameApiClient.DepositAsync(
+            apiUrl: Arg.Is(query.ApiUrl),
+            companyKey: Arg.Is(query.CompanyKey),
+            username: Arg.Is(username),
+            txnId: Arg.Any<string>(),
+            amount: Arg.Is(query.Amount),
+            cancellationToken: Arg.Any<CancellationToken>())
              .Returns(response);
 
         var service = new FundOutGetService(
             fakeGameApiClient,
-            fakeSnowFlake);
+            fakeUserNameUtensils);
 
-        var actual = await service
-                .GetAsync(
-                    query)
-                .ConfigureAwait(false);
+        var actual = await service.GetAsync(query);
 
-        Assert.IsNotNull(actual);
-        Assert.AreEqual("123465", actual.TxnId);
-        Assert.AreEqual(new JsonObject { ["TxnId"] = "123456" }.ToJsonString(), actual.Resp);
+        Assert.Equal("D3100246965624246272", actual.TxnId);
+        Assert.Equal(new JsonObject { ["TxnId"] = "D3100246965624246272" }.ToJsonString(), actual.Resp);
     }
 }

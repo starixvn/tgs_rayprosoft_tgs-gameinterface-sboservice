@@ -18,7 +18,7 @@ public static class ServiceCollectionExtensions
             .AddOptions<GameInterfaceSBOClientOptions>()
             .Configure(configure)
             .Services
-            .AddGrpcClient<GameInterfaceSBOService.GameInterfaceSBOServiceClient>((sp, configureClient) =>
+            .AddGrpcClient<GameInterfaceSBO.GameInterfaceSBOClient>((sp, configureClient) =>
             {
                 var options = sp.GetRequiredService<IOptions<GameInterfaceSBOClientOptions>>().Value;
                 isDns = options.BaseUrl.Scheme.Equals("dns", StringComparison.OrdinalIgnoreCase);

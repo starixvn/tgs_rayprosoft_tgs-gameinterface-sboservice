@@ -5,15 +5,14 @@ using Tgs.GameInterface.SBOService.Core.Models;
 
 namespace Tgs.GameInterface.SBOService.Core.UnitTest.ApplicationServicesUnitTest;
 
-[TestClass]
-public class GameHistoryBySportsBookQueryServiceUnitTest
+public class GameWagerBySportsBookQueryServiceUnitTest
 {
-    [TestMethod]
+    [Fact]
     public async Task Status_Is_Not_In_Filter()
     {
         var fakeGameApiClient = Substitute.For<IGameApiClient>();
 
-        var query = new GameHistoryBySportsBookQuery(
+        var query = new GameWagerBySportsBookQuery(
             new Uri("https://ex-api-demo-yy.568win.com/"),
             "49ED28A987624CA0A3F834C3B8A69AAB",
             "STAG_GPI_CNY",
@@ -21,7 +20,7 @@ public class GameHistoryBySportsBookQueryServiceUnitTest
             DateTime.Parse("2022-09-22 17:00:00 +08:00"));
 
         var response = new BetBySportsBookResponse(
-            ExternalRoundId: "4471911",
+            ExternalWagerId: "4471911",
             PlayerCode: "4ucmqplxkuyd",
             SportsType: "Football",
             Status: "waiting",
@@ -46,24 +45,21 @@ public class GameHistoryBySportsBookQueryServiceUnitTest
              .Returns(new BetBySportsBookResponse[] { response
              }.ToAsyncEnumerable());
 
-        var service = new GameHistoryBySportsBookQueryService(fakeGameApiClient);
+        var service = new GameWagerBySportsBookQueryService(fakeGameApiClient);
 
-        var actual = await service
-                .QueryAsync(
-                    query)
-                .ToArrayAsync()
-                .ConfigureAwait(false);
+        var actual = await service.QueryAsync(
+            query)
+            .ToArrayAsync();
 
-        Assert.IsNotNull(actual);
-        Assert.IsFalse(actual.Any());
+        Assert.False(actual.Any());
     }
 
-    [TestMethod]
+    [Fact]
     public async Task Status_Is_Won()
     {
         var fakeGameApiClient = Substitute.For<IGameApiClient>();
 
-        var query = new GameHistoryBySportsBookQuery(
+        var query = new GameWagerBySportsBookQuery(
             new Uri("https://ex-api-demo-yy.568win.com/"),
             "49ED28A987624CA0A3F834C3B8A69AAB",
             "STAG_GPI_CNY",
@@ -71,7 +67,7 @@ public class GameHistoryBySportsBookQueryServiceUnitTest
             DateTime.Parse("2022-09-22 17:00:00 +08:00"));
 
         var response = new BetBySportsBookResponse(
-            ExternalRoundId: "72344677",
+            ExternalWagerId: "72344677",
             PlayerCode: "4ucmqplxkuyd",
             SportsType: "Football",
             Status: "won",
@@ -95,32 +91,29 @@ public class GameHistoryBySportsBookQueryServiceUnitTest
                 Arg.Is(query.EndTime))
              .Returns(new BetBySportsBookResponse[] { response }.ToAsyncEnumerable());
 
-        var service = new GameHistoryBySportsBookQueryService(fakeGameApiClient);
+        var service = new GameWagerBySportsBookQueryService(fakeGameApiClient);
 
-        var actual = await service
-                .QueryAsync(
-                    query)
-                .ToArrayAsync()
-                .ConfigureAwait(false);
+        var actual = await service.QueryAsync(
+            query)
+            .ToArrayAsync();
 
-        Assert.IsNotNull(actual);
-        Assert.AreEqual(response.PlayerCode, actual[0].PlayerCode);
-        Assert.AreEqual(response.ExternalRoundId, actual[0].ExternalRoundId);
-        Assert.AreEqual(response.OrderTime, actual[0].ExternalCreatedOn);
-        Assert.AreEqual(response.SettleTime, actual[0].ExternalClosedOn);
-        Assert.AreEqual(response.Bet, actual[0].Bet);
-        Assert.AreEqual(response.ValidBet, actual[0].ValidBet);
-        Assert.AreEqual(response.PlayerWinLoss, actual[0].PlayerWinLoss);
-        Assert.AreEqual(response.Turnover, actual[0].Turnover);
-        Assert.AreEqual(response.PlayerWinLoss + response.ValidBet, actual[0].Settle);
+        Assert.Equal(response.PlayerCode, actual[0].PlayerCode);
+        Assert.Equal(response.ExternalWagerId, actual[0].ExternalWagerId);
+        Assert.Equal(response.OrderTime, actual[0].ExternalCreatedOn);
+        Assert.Equal(response.SettleTime, actual[0].ExternalClosedOn);
+        Assert.Equal(response.Bet, actual[0].Bet);
+        Assert.Equal(response.ValidBet, actual[0].ValidBet);
+        Assert.Equal(response.PlayerWinLoss, actual[0].PlayerWinLoss);
+        Assert.Equal(response.Turnover, actual[0].Turnover);
+        Assert.Equal(response.PlayerWinLoss + response.ValidBet, actual[0].Settle);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task Status_Is_Lose()
     {
         var fakeGameApiClient = Substitute.For<IGameApiClient>();
 
-        var query = new GameHistoryBySportsBookQuery(
+        var query = new GameWagerBySportsBookQuery(
             new Uri("https://ex-api-demo-yy.568win.com/"),
             "49ED28A987624CA0A3F834C3B8A69AAB",
             "STAG_GPI_CNY",
@@ -128,7 +121,7 @@ public class GameHistoryBySportsBookQueryServiceUnitTest
             DateTime.Parse("2022-10-30T02:06:53.25-04:00"));
 
         var response = new BetBySportsBookResponse(
-            ExternalRoundId: "72347399",
+            ExternalWagerId: "72347399",
             PlayerCode: "4uhiw6g8yyn1",
             SportsType: "Football",
             Status: "lose",
@@ -152,32 +145,29 @@ public class GameHistoryBySportsBookQueryServiceUnitTest
                 Arg.Is(query.EndTime))
              .Returns(new BetBySportsBookResponse[] { response }.ToAsyncEnumerable());
 
-        var service = new GameHistoryBySportsBookQueryService(fakeGameApiClient);
+        var service = new GameWagerBySportsBookQueryService(fakeGameApiClient);
 
-        var actual = await service
-                .QueryAsync(
-                    query)
-                .ToArrayAsync()
-                .ConfigureAwait(false);
+        var actual = await service.QueryAsync(
+            query)
+            .ToArrayAsync();
 
-        Assert.IsNotNull(actual);
-        Assert.AreEqual(response.PlayerCode, actual[0].PlayerCode);
-        Assert.AreEqual(response.ExternalRoundId, actual[0].ExternalRoundId);
-        Assert.AreEqual(response.OrderTime, actual[0].ExternalCreatedOn);
-        Assert.AreEqual(response.SettleTime, actual[0].ExternalClosedOn);
-        Assert.AreEqual(response.Bet, actual[0].Bet);
-        Assert.AreEqual(response.ValidBet, actual[0].ValidBet);
-        Assert.AreEqual(response.PlayerWinLoss, actual[0].PlayerWinLoss);
-        Assert.AreEqual(response.Turnover, actual[0].Turnover);
-        Assert.AreEqual(0, actual[0].Settle);
+        Assert.Equal(response.PlayerCode, actual[0].PlayerCode);
+        Assert.Equal(response.ExternalWagerId, actual[0].ExternalWagerId);
+        Assert.Equal(response.OrderTime, actual[0].ExternalCreatedOn);
+        Assert.Equal(response.SettleTime, actual[0].ExternalClosedOn);
+        Assert.Equal(response.Bet, actual[0].Bet);
+        Assert.Equal(response.ValidBet, actual[0].ValidBet);
+        Assert.Equal(response.PlayerWinLoss, actual[0].PlayerWinLoss);
+        Assert.Equal(response.Turnover, actual[0].Turnover);
+        Assert.Equal(0, actual[0].Settle);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task Status_Is_Half_Lose()
     {
         var fakeGameApiClient = Substitute.For<IGameApiClient>();
 
-        var query = new GameHistoryBySportsBookQuery(
+        var query = new GameWagerBySportsBookQuery(
             new Uri("https://ex-api-demo-yy.568win.com/"),
             "49ED28A987624CA0A3F834C3B8A69AAB",
             "STAG_GPI_CNY",
@@ -185,7 +175,7 @@ public class GameHistoryBySportsBookQueryServiceUnitTest
             DateTime.Parse("2022-10-30T00:49:35.797-04:00"));
 
         var response = new BetBySportsBookResponse(
-            ExternalRoundId: "72345565",
+            ExternalWagerId: "72345565",
             PlayerCode: "4uhiw6g8yyn1",
             SportsType: "Football",
             Status: "lose",
@@ -209,32 +199,29 @@ public class GameHistoryBySportsBookQueryServiceUnitTest
                 Arg.Is(query.EndTime))
              .Returns(new BetBySportsBookResponse[] { response }.ToAsyncEnumerable());
 
-        var service = new GameHistoryBySportsBookQueryService(fakeGameApiClient);
+        var service = new GameWagerBySportsBookQueryService(fakeGameApiClient);
 
-        var actual = await service
-                .QueryAsync(
-                    query)
-                .ToArrayAsync()
-                .ConfigureAwait(false);
+        var actual = await service.QueryAsync(
+            query)
+            .ToArrayAsync();
 
-        Assert.IsNotNull(actual);
-        Assert.AreEqual(response.PlayerCode, actual[0].PlayerCode);
-        Assert.AreEqual(response.ExternalRoundId, actual[0].ExternalRoundId);
-        Assert.AreEqual(response.OrderTime, actual[0].ExternalCreatedOn);
-        Assert.AreEqual(response.SettleTime, actual[0].ExternalClosedOn);
-        Assert.AreEqual(response.Bet, actual[0].Bet);
-        Assert.AreEqual(response.ValidBet, actual[0].ValidBet);
-        Assert.AreEqual(response.PlayerWinLoss, actual[0].PlayerWinLoss);
-        Assert.AreEqual(response.Turnover, actual[0].Turnover);
-        Assert.AreEqual(response.PlayerWinLoss + response.ValidBet, actual[0].Settle);
+        Assert.Equal(response.PlayerCode, actual[0].PlayerCode);
+        Assert.Equal(response.ExternalWagerId, actual[0].ExternalWagerId);
+        Assert.Equal(response.OrderTime, actual[0].ExternalCreatedOn);
+        Assert.Equal(response.SettleTime, actual[0].ExternalClosedOn);
+        Assert.Equal(response.Bet, actual[0].Bet);
+        Assert.Equal(response.ValidBet, actual[0].ValidBet);
+        Assert.Equal(response.PlayerWinLoss, actual[0].PlayerWinLoss);
+        Assert.Equal(response.Turnover, actual[0].Turnover);
+        Assert.Equal(response.PlayerWinLoss + response.ValidBet, actual[0].Settle);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task Status_Is_Draw()
     {
         var fakeGameApiClient = Substitute.For<IGameApiClient>();
 
-        var query = new GameHistoryBySportsBookQuery(
+        var query = new GameWagerBySportsBookQuery(
             new Uri("https://ex-api-demo-yy.568win.com/"),
             "49ED28A987624CA0A3F834C3B8A69AAB",
             "STAG_GPI_CNY",
@@ -242,7 +229,7 @@ public class GameHistoryBySportsBookQueryServiceUnitTest
             DateTime.Parse("2022-10-27T05:51:29.67-04:00"));
 
         var response = new BetBySportsBookResponse(
-            ExternalRoundId: "71806058",
+            ExternalWagerId: "71806058",
             PlayerCode: "4uhiw6g8yyn1",
             SportsType: "Football",
             Status: "draw",
@@ -266,23 +253,20 @@ public class GameHistoryBySportsBookQueryServiceUnitTest
                 Arg.Is(query.EndTime))
              .Returns(new BetBySportsBookResponse[] { response }.ToAsyncEnumerable());
 
-        var service = new GameHistoryBySportsBookQueryService(fakeGameApiClient);
+        var service = new GameWagerBySportsBookQueryService(fakeGameApiClient);
 
-        var actual = await service
-                .QueryAsync(
-                    query)
-                .ToArrayAsync()
-                .ConfigureAwait(false);
+        var actual = await service.QueryAsync(
+            query)
+            .ToArrayAsync();
 
-        Assert.IsNotNull(actual);
-        Assert.AreEqual(response.PlayerCode, actual[0].PlayerCode);
-        Assert.AreEqual(response.ExternalRoundId, actual[0].ExternalRoundId);
-        Assert.AreEqual(response.OrderTime, actual[0].ExternalCreatedOn);
-        Assert.AreEqual(response.SettleTime, actual[0].ExternalClosedOn);
-        Assert.AreEqual(response.Bet, actual[0].Bet);
-        Assert.AreEqual(response.ValidBet, actual[0].ValidBet);
-        Assert.AreEqual(response.PlayerWinLoss, actual[0].PlayerWinLoss);
-        Assert.AreEqual(response.Turnover, actual[0].Turnover);
-        Assert.AreEqual(response.PlayerWinLoss + response.ValidBet, actual[0].Settle);
+        Assert.Equal(response.PlayerCode, actual[0].PlayerCode);
+        Assert.Equal(response.ExternalWagerId, actual[0].ExternalWagerId);
+        Assert.Equal(response.OrderTime, actual[0].ExternalCreatedOn);
+        Assert.Equal(response.SettleTime, actual[0].ExternalClosedOn);
+        Assert.Equal(response.Bet, actual[0].Bet);
+        Assert.Equal(response.ValidBet, actual[0].ValidBet);
+        Assert.Equal(response.PlayerWinLoss, actual[0].PlayerWinLoss);
+        Assert.Equal(response.Turnover, actual[0].Turnover);
+        Assert.Equal(response.PlayerWinLoss + response.ValidBet, actual[0].Settle);
     }
 }

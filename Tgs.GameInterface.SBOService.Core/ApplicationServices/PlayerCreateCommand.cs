@@ -4,4 +4,4 @@ public record PlayerCreateCommand(
     Uri ApiUrl,
     string CompanyKey,
     string Agent,
-    string Username);
+    string PlayerCode);

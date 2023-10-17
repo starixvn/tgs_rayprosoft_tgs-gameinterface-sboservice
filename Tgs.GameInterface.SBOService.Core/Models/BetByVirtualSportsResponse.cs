@@ -1,7 +1,7 @@
 ﻿namespace Tgs.GameInterface.SBOService.Core.Models;
 
 public record BetByVirtualSportsResponse(
-    string ExternalRoundId,
+    string ExternalWagerId,
     string PlayerCode,
     string ProductType,
     string Status,

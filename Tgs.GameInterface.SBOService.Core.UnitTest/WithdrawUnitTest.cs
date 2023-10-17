@@ -2,12 +2,11 @@
 using Microsoft.Extensions.Logging.Abstractions;
 using RichardSzalay.MockHttp;
 
-namespace Tgs.GameInterface.SBOService.Core.UnitTest.GameApiClientUnitTest;
+namespace Tgs.GameInterface.SBOService.Core.UnitTest;
 
-[TestClass]
-public class DepositUnitTest
+public class WithdrawUnitTest
 {
-    [TestMethod]
+    [Fact]
     public async Task Normal_Process()
     {
         var apiUrl = new Uri("https://ex-api-demo-yy.568win.com/");
@@ -15,15 +14,16 @@ public class DepositUnitTest
         var username = "4ucmqplxkuyd";
         var txnId = Guid.NewGuid().ToString("N");
         var amount = 1m;
+        var isFullAmount = false;
 
-        var url = new Uri(apiUrl, "/web-root/restricted/player/deposit.aspx");
+        var url = new Uri(apiUrl, "/web-root/restricted/player/withdraw.aspx");
 
         var handler = new MockHttpMessageHandler();
         _ = handler
                 .Expect(HttpMethod.Post, url.ToString())
                 .Respond(
                     HttpStatusCode.OK,
-                    new StringContent("{\"txnId\":\"D20190208190823090\",\"refno\":\"" + txnId + "\",\"balance\":1,\"outstanding\":0,\"serverId\":\"YY-demoanduat\",\"error\":{\"id\":0,\"msg\":\"No Error\"}}"));
+                    new StringContent("{\"txnId\":\"D20190208190823090\",\"refno\":\"" + txnId + "\",\"balance\":0,\"outstanding\":0,\"serverId\":\"YY-demoanduat\",\"error\":{\"id\":0,\"msg\":\"No Error\"}}"));
 
         var fakeLog = NullLogger<GameApiClient>.Instance;
         var fakeHttpClient = handler.ToHttpClient();
@@ -32,16 +32,14 @@ public class DepositUnitTest
             fakeLog,
             fakeHttpClient);
 
-        var actual = await client
-                .DepositAsync(
-                    apiUrl,
-                    companyKey,
-                    username,
-                    txnId,
-                    amount)
-               .ConfigureAwait(false);
+        var actual = await client.WithdrawAsync(
+            apiUrl: apiUrl,
+            companyKey: companyKey,
+            username: username,
+            txnId: txnId,
+            amount: amount,
+            isFullAmount: isFullAmount);
 
-        Assert.IsNotNull(actual);
-        Assert.AreEqual("D20190208190823090", actual.TxnId);
+        Assert.Equal("D20190208190823090", actual.TxnId);
     }
 }

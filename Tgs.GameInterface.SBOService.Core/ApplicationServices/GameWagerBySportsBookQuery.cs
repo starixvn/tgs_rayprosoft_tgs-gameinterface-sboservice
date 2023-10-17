@@ -1,8 +1,8 @@
 ﻿namespace Tgs.GameInterface.SBOService.Core.ApplicationServices;
 
-public record GameHistoryBySportsBookQuery(
+public record GameWagerBySportsBookQuery(
     Uri ApiUrl,
     string CompanyKey,
     string Agent,
-    DateTime StartTime,
-    DateTime EndTime);
+    DateTimeOffset StartTime,
+    DateTimeOffset EndTime);

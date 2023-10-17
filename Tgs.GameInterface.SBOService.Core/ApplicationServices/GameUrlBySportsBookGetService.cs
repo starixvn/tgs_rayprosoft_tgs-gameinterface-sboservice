@@ -1,37 +1,39 @@
-﻿using Tgs.GameInterface.SBOService.Core.Models;
-using Tgs.ServiceUtility;
+﻿using Tgs.ServiceUtility;
 
 namespace Tgs.GameInterface.SBOService.Core.ApplicationServices;
 
 internal class GameUrlBySportsBookGetService : IGetService<GameUrlBySportsBookQuery, GameUrlResult>
 {
     private readonly IGameApiClient _client;
+    private readonly IUserNameUtensils _userNameUtensils;
 
-    public GameUrlBySportsBookGetService(IGameApiClient client)
+    public GameUrlBySportsBookGetService(
+        IGameApiClient client,
+        IUserNameUtensils userNameUtensils)
     {
         _client = client ?? throw new ArgumentNullException(nameof(client));
+        _userNameUtensils = userNameUtensils ?? throw new ArgumentNullException(nameof(userNameUtensils));
     }
 
     public async ValueTask<GameUrlResult> GetAsync(
         GameUrlBySportsBookQuery query,
         CancellationToken cancellationToken = default)
     {
-        var username = $"{query.Agent.Split('_')[0]}_{query.Username}";
-        var response = await _client
-                .LoginAsync(
-                    query.ApiUrl,
-                    query.CompanyKey,
-                    username,
-                    "SportsBook",
-                    cancellationToken)
-                .ConfigureAwait(false);
+        var username = _userNameUtensils.GetUserName(query.Agent, query.PlayerCode);
+
+        var response = await _client.LoginAsync(
+            apiUrl: query.ApiUrl,
+            companyKey: query.CompanyKey,
+            username: username,
+            portfolio: "SportsBook",
+            cancellationToken: cancellationToken)
+            .ConfigureAwait(false);
 
         if (!response.IsPlayerExist)
         {
             return new GameUrlResult(
                 IsPlayerExist: false,
-                GameUrl: string.Empty
-                );
+                GameUrl: string.Empty);
         }
 
         var device = query.IsMobile ? "m" : "d";

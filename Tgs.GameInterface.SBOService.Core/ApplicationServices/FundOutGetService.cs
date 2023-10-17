@@ -1,34 +1,31 @@
-﻿using Snowflake;
-using Tgs.GameInterface.SBOService.Core.Models;
-using Tgs.ServiceUtility;
+﻿using Tgs.ServiceUtility;
 
 namespace Tgs.GameInterface.SBOService.Core.ApplicationServices;
 
 internal class FundOutGetService : IGetService<FundOutQuery, FundResult>
 {
     private readonly IGameApiClient _client;
-    private readonly SnowFlake _snowFlake;
+    private readonly IUserNameUtensils _userNameUtensils;
 
     public FundOutGetService(
         IGameApiClient client,
-        SnowFlake snowFlake)
+        IUserNameUtensils userNameUtensils)
     {
         _client = client ?? throw new ArgumentNullException(nameof(client));
-        _snowFlake = snowFlake ?? throw new ArgumentNullException(nameof(snowFlake));
+        _userNameUtensils = userNameUtensils ?? throw new ArgumentNullException(nameof(userNameUtensils));
     }
 
     public async ValueTask<FundResult> GetAsync(FundOutQuery query, CancellationToken cancellationToken = default)
     {
-        var txnId = $"D{_snowFlake.NextId()}";
-        var username = $"{query.Agent.Split('_')[0]}_{query.Username}";
-        var response = await _client
-            .DepositAsync(
-                query.ApiUrl,
-                query.CompanyKey,
-                username,
-                txnId,
-                query.Amount,
-                cancellationToken)
+        var username = _userNameUtensils.GetUserName(query.Agent, query.PlayerCode);
+
+        var response = await _client.DepositAsync(
+            apiUrl: query.ApiUrl,
+            companyKey: query.CompanyKey,
+            username: username,
+            txnId: query.OrderId,
+            amount: query.Amount,
+            cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
         return new FundResult(

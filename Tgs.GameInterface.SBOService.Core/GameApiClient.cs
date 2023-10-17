@@ -8,6 +8,7 @@ using System.Text.Json.Nodes;
 using Microsoft.Extensions.Logging;
 using Polly;
 using Tgs.GameInterface.SBOService.Core.Exceptions;
+using Tgs.GameInterface.SBOService.Core.Extensions;
 using Tgs.GameInterface.SBOService.Core.JsonConverters;
 using Tgs.GameInterface.SBOService.Core.Models;
 
@@ -104,8 +105,8 @@ internal class GameApiClient : IGameApiClient
         Uri apiUrl,
         string companyKey,
         string agent,
-        DateTime startTime,
-        DateTime endTime,
+        DateTimeOffset startTime,
+        DateTimeOffset endTime,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         var startTimeEastern = TimeZoneInfo.ConvertTime(startTime.ToUniversalTime(), _timeZone);
@@ -145,7 +146,7 @@ internal class GameApiClient : IGameApiClient
         }
 
         var betTransactions = results.Select(x => new BetBySportsBookResponse(
-                ExternalRoundId: x!["refNo"]!.ToString(),
+                ExternalWagerId: x!["refNo"]!.ToString(),
                 PlayerCode: x["username"]!.ToString().Split("_")[1],
                 SportsType: x["sportsType"]!.ToString(),
                 Status: x["status"]!.ToString(),
@@ -170,8 +171,8 @@ internal class GameApiClient : IGameApiClient
         Uri apiUrl,
         string companyKey,
         string agent,
-        DateTime startTime,
-        DateTime endTime,
+        DateTimeOffset startTime,
+        DateTimeOffset endTime,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         var startTimeEastern = TimeZoneInfo.ConvertTime(startTime.ToUniversalTime(), _timeZone);
@@ -211,7 +212,7 @@ internal class GameApiClient : IGameApiClient
         }
 
         var betTransactions = results.Select(x => new BetByVirtualSportsResponse(
-                ExternalRoundId: x!["refNo"]!.ToString(),
+                ExternalWagerId: x!["refNo"]!.ToString(),
                 PlayerCode: x["username"]!.ToString().Split("_")[1],
                 ProductType: x["productType"]!.ToString(),
                 Status: x["status"]!.ToString(),
@@ -337,7 +338,7 @@ internal class GameApiClient : IGameApiClient
     public async ValueTask RegisterAgentAsync(
         Uri apiUrl,
         string companyKey,
-        string username,
+        string agent,
         string currency,
         int min,
         int max,
@@ -350,7 +351,7 @@ internal class GameApiClient : IGameApiClient
         JsonObject request = new JsonObject
         {
             { "CompanyKey", companyKey },
-            { "Username", username },
+            { "Username", agent },
             { "Password", "TgsPassw0rd" },
             { "Currency", currency },
             { "Min", min },
@@ -408,7 +409,7 @@ internal class GameApiClient : IGameApiClient
     public async ValueTask<UpdateAgentPresetBetSettingsResponse> UpdateAgentPresetBetSettingsAsync(
         Uri apiUrl,
         string companyKey,
-        string username,
+        string agent,
         int min,
         int max,
         int maxPerMatch,
@@ -420,7 +421,7 @@ internal class GameApiClient : IGameApiClient
         JsonObject request = new JsonObject
         {
             { "CompanyKey", companyKey },
-            { "Username", username },
+            { "Username", agent },
             { "Min", min },
             { "Max", max },
             { "MaxPerMatch", maxPerMatch },

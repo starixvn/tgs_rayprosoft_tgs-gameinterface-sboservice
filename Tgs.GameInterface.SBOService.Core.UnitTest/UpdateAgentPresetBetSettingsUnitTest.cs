@@ -2,12 +2,11 @@
 using Microsoft.Extensions.Logging.Abstractions;
 using RichardSzalay.MockHttp;
 
-namespace Tgs.GameInterface.SBOService.Core.UnitTest.GameApiClientUnitTest;
+namespace Tgs.GameInterface.SBOService.Core.UnitTest;
 
-[TestClass]
 public class UpdateAgentPresetBetSettingsUnitTest
 {
-    [TestMethod]
+    [Fact]
     public async Task Normal_Process()
     {
         var apiUrl = new Uri("https://ex-api-demo-yy.568win.com/");
@@ -34,22 +33,19 @@ public class UpdateAgentPresetBetSettingsUnitTest
             fakeLog,
             fakeHttpClient);
 
-        var actual = await client
-                .UpdateAgentPresetBetSettingsAsync(
-                    apiUrl,
-                    companyKey,
-                    username,
-                    min,
-                    max,
-                    maxPerMatch,
-                    casinoTableLimit)
-               .ConfigureAwait(false);
+        var actual = await client.UpdateAgentPresetBetSettingsAsync(
+            apiUrl: apiUrl,
+            companyKey: companyKey,
+            agent: username,
+            min: min,
+            max: max,
+            maxPerMatch: maxPerMatch,
+            casinoTableLimit: casinoTableLimit);
 
-        Assert.IsNotNull(actual);
-        Assert.IsTrue(actual.IsAgentExist);
+        Assert.True(actual.IsAgentExist);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task Agent_Does_Not_Exist()
     {
         var apiUrl = new Uri("https://ex-api-demo-yy.568win.com/");
@@ -76,18 +72,15 @@ public class UpdateAgentPresetBetSettingsUnitTest
             fakeLog,
             fakeHttpClient);
 
-        var actual = await client
-                .UpdateAgentPresetBetSettingsAsync(
-                    apiUrl,
-                    companyKey,
-                    username,
-                    min,
-                    max,
-                    maxPerMatch,
-                    casinoTableLimit)
-               .ConfigureAwait(false);
+        var actual = await client.UpdateAgentPresetBetSettingsAsync(
+            apiUrl: apiUrl,
+            companyKey: companyKey,
+            agent: username,
+            min: min,
+            max: max,
+            maxPerMatch: maxPerMatch,
+            casinoTableLimit: casinoTableLimit);
 
-        Assert.IsNotNull(actual);
-        Assert.IsFalse(actual.IsAgentExist);
+        Assert.False(actual.IsAgentExist);
     }
 }

@@ -2,17 +2,16 @@
 using Microsoft.Extensions.Logging.Abstractions;
 using RichardSzalay.MockHttp;
 
-namespace Tgs.GameInterface.SBOService.Core.UnitTest.GameApiClientUnitTest;
+namespace Tgs.GameInterface.SBOService.Core.UnitTest;
 
-[TestClass]
 public class RegisterAgentUnitTest
 {
-    [TestMethod]
+    [Fact]
     public async Task Normal_Process()
     {
         var apiUrl = new Uri("https://ex-api-demo-yy.568win.com/");
         var companyKey = "49ED28A987624CA0A3F834C3B8A69AAB";
-        var username = "STAG_GPI_CNY";
+        var agent = "STAG_GPI_CNY";
         var currency = "CNY";
         var min = 1;
         var max = 5000;
@@ -36,15 +35,14 @@ public class RegisterAgentUnitTest
             fakeHttpClient);
 
         await client
-                .RegisterAgentAsync(
-                    apiUrl,
-                    companyKey,
-                    username,
-                    currency,
-                    min,
-                    max,
-                    maxPerMatch,
-                    casinoTableLimit)
-               .ConfigureAwait(false);
+            .RegisterAgentAsync(
+            apiUrl: apiUrl,
+            companyKey: companyKey,
+            agent: agent,
+            currency: currency,
+            min: min,
+            max: max,
+            maxPerMatch: maxPerMatch,
+            casinoTableLimit: casinoTableLimit);
     }
 }

@@ -7,7 +7,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<Version>0.0.10</Version>
+		<Version>0.0.11</Version>
 		<Authors>Raypro</Authors>
 		<Description>Tgs GameInterface SBO Client</Description>
 		<PackageProjectUrl>https://gitlab.com/rayprosoft/tgs-gameinterface-sboservice</PackageProjectUrl>
@@ -27,7 +27,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Protobuf Include="..\Tgs.GameInterface.SBOService\Protos\gameinterfacesboservice.proto" Link="gameinterfacesboservice.proto" GrpcServices="Client" />
+	  <Protobuf Include="..\Tgs.GameInterface.SBOService\Protos\gameinterfacesbo.proto">
+	    <Link>gameinterfacesbo.proto</Link>
+	  </Protobuf>
 	</ItemGroup>
 
 </Project>

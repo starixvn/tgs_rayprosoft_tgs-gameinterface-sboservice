@@ -9,7 +9,7 @@ public record AgentPresetBetSettingsViewModel
     [Required]
     public string CompanyKey { get; init; } = default!;
     [Required]
-    public string Username { get; init; } = default!;
+    public string Agent { get; init; } = default!;
     [Required]
     public string Currency { get; init; } = default!;
     [Required]

@@ -9,5 +9,5 @@ public record FundStatusViewModel
     [Required]
     public string CompanyKey { get; init; } = default!;
     [Required]
-    public string TxnId { get; init; } = default!;
+    public string OrderId { get; init; } = default!;
 }

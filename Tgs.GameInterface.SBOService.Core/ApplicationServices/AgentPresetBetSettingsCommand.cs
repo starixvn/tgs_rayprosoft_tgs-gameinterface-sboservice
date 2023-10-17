@@ -3,7 +3,7 @@
 public record AgentPresetBetSettingsCommand(
     Uri ApiUrl,
     string CompanyKey,
-    string Username,
+    string Agent,
     string Currency,
     int Min,
     int Max,

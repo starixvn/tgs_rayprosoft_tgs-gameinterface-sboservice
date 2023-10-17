@@ -4,10 +4,9 @@ using Tgs.GameInterface.SBOService.Core.Models;
 
 namespace Tgs.GameInterface.SBOService.Core.UnitTest.ApplicationServicesUnitTest;
 
-[TestClass]
 public class AgentPresetBetSettingsCommandServiceUnitTest
 {
-    [TestMethod]
+    [Fact]
     public async Task Normal_Process()
     {
         var fakeGameApiClient = Substitute.For<IGameApiClient>();
@@ -27,38 +26,34 @@ public class AgentPresetBetSettingsCommandServiceUnitTest
             IsAgentExist = true,
         };
 
-        _ = fakeGameApiClient
-             .UpdateAgentPresetBetSettingsAsync(
-                Arg.Is(command.ApiUrl),
-                Arg.Is(command.CompanyKey),
-                Arg.Is(command.Username),
-                Arg.Is(command.Min),
-                Arg.Is(command.Max),
-                Arg.Is(command.MaxPerMatch),
-                Arg.Is(command.CasinoTableLimit))
-             .Returns(response);
+        _ = fakeGameApiClient.UpdateAgentPresetBetSettingsAsync(
+            apiUrl: Arg.Is(command.ApiUrl),
+            companyKey: Arg.Is(command.CompanyKey),
+            agent: Arg.Is(command.Agent),
+            min: Arg.Is(command.Min),
+            max: Arg.Is(command.Max),
+            maxPerMatch: Arg.Is(command.MaxPerMatch),
+            casinoTableLimit: Arg.Is(command.CasinoTableLimit))
+            .Returns(response);
 
         var service = new AgentPresetBetSettingsCommandService(fakeGameApiClient);
 
-        await service
-            .ExecuteAsync(
-                command)
-            .ConfigureAwait(false);
+        await service.ExecuteAsync(command);
 
         _ = fakeGameApiClient
-             .Received(0)
-             .RegisterAgentAsync(
-                Arg.Is(command.ApiUrl),
-                Arg.Is(command.CompanyKey),
-                Arg.Is(command.Username),
-                Arg.Is(command.Currency),
-                Arg.Is(command.Min),
-                Arg.Is(command.Max),
-                Arg.Is(command.MaxPerMatch),
-                Arg.Is(command.CasinoTableLimit));
+            .Received(0)
+            .RegisterAgentAsync(
+            apiUrl: Arg.Is(command.ApiUrl),
+            companyKey: Arg.Is(command.CompanyKey),
+            agent: Arg.Is(command.Agent),
+            currency: Arg.Is(command.Currency),
+            min: Arg.Is(command.Min),
+            max: Arg.Is(command.Max),
+            maxPerMatch: Arg.Is(command.MaxPerMatch),
+            casinoTableLimit: Arg.Is(command.CasinoTableLimit));
     }
 
-    [TestMethod]
+    [Fact]
     public async Task Register_Agent()
     {
         var fakeGameApiClient = Substitute.For<IGameApiClient>();
@@ -79,33 +74,30 @@ public class AgentPresetBetSettingsCommandServiceUnitTest
         };
 
         _ = fakeGameApiClient
-             .UpdateAgentPresetBetSettingsAsync(
-                Arg.Is(command.ApiUrl),
-                Arg.Is(command.CompanyKey),
-                Arg.Is(command.Username),
-                Arg.Is(command.Min),
-                Arg.Is(command.Max),
-                Arg.Is(command.MaxPerMatch),
-                Arg.Is(command.CasinoTableLimit))
-             .Returns(response);
+            .UpdateAgentPresetBetSettingsAsync(
+            apiUrl: Arg.Is(command.ApiUrl),
+            companyKey: Arg.Is(command.CompanyKey),
+            agent: Arg.Is(command.Agent),
+            min: Arg.Is(command.Min),
+            max: Arg.Is(command.Max),
+            maxPerMatch: Arg.Is(command.MaxPerMatch),
+            casinoTableLimit: Arg.Is(command.CasinoTableLimit))
+            .Returns(response);
 
         var service = new AgentPresetBetSettingsCommandService(fakeGameApiClient);
 
-        await service
-            .ExecuteAsync(
-                command)
-            .ConfigureAwait(false);
+        await service.ExecuteAsync(command);
 
         _ = fakeGameApiClient
-             .Received(1)
-             .RegisterAgentAsync(
-                Arg.Is(command.ApiUrl),
-                Arg.Is(command.CompanyKey),
-                Arg.Is(command.Username),
-                Arg.Is(command.Currency),
-                Arg.Is(command.Min),
-                Arg.Is(command.Max),
-                Arg.Is(command.MaxPerMatch),
-                Arg.Is(command.CasinoTableLimit));
+            .Received(1)
+            .RegisterAgentAsync(
+            apiUrl: Arg.Is(command.ApiUrl),
+            companyKey: Arg.Is(command.CompanyKey),
+            agent: Arg.Is(command.Agent),
+            currency: Arg.Is(command.Currency),
+            min: Arg.Is(command.Min),
+            max: Arg.Is(command.Max),
+            maxPerMatch: Arg.Is(command.MaxPerMatch),
+            casinoTableLimit: Arg.Is(command.CasinoTableLimit));
     }
 }
