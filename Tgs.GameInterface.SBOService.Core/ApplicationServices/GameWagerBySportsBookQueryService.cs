@@ -3,20 +3,13 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.GameInterface.SBOService.Core.ApplicationServices;
 
-internal class GameWagerBySportsBookQueryService : IQueryService<GameWagerBySportsBookQuery, GameWagerResult>
+internal class GameWagerBySportsBookQueryService(IGameApiClient client) : IQueryService<GameWagerBySportsBookQuery, GameWagerResult>
 {
-    private readonly IGameApiClient _client;
-
-    public GameWagerBySportsBookQueryService(IGameApiClient client)
-    {
-        _client = client ?? throw new ArgumentNullException(nameof(client));
-    }
-
     public async IAsyncEnumerable<GameWagerResult> QueryAsync(
         GameWagerBySportsBookQuery query,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        var responses = await _client.GetBetListByModifyDateAgentBySportsBookAsync(
+        var responses = await client.GetBetListByModifyDateAgentBySportsBookAsync(
             apiUrl: query.ApiUrl,
             companyKey: query.CompanyKey,
             agent: query.Agent,

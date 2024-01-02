@@ -39,7 +39,7 @@ public class GetBetListByModifyDateAgentBySportsBookUnitTest
             endTime: endTime)
             .ToArrayAsync();
 
-        Assert.True(actual.Any());
+        Assert.NotEmpty(actual);
         Assert.Equal("4ucmqplxkuyd", actual[0].PlayerCode);
         Assert.Equal("4471911", actual[0].ExternalWagerId);
     }
@@ -77,7 +77,7 @@ public class GetBetListByModifyDateAgentBySportsBookUnitTest
             endTime: endTime)
             .ToArrayAsync();
 
-        Assert.True(actual.Any());
+        Assert.NotEmpty(actual);
         Assert.Equal("4ucmqplxkuyd", actual[0].PlayerCode);
         Assert.Equal("4471967", actual[0].ExternalWagerId);
     }

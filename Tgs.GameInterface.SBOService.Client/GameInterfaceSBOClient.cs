@@ -4,15 +4,9 @@ using Tgs.GameInterface.SBOService.Protos;
 
 namespace Tgs.GameInterface.SBOService.Client;
 
-internal class GameInterfaceSBOClient : IGameInterfaceSBOClient
+internal class GameInterfaceSBOClient(
+    GameInterfaceSBO.GameInterfaceSBOClient client) : IGameInterfaceSBOClient
 {
-    private readonly GameInterfaceSBO.GameInterfaceSBOClient _client;
-
-    public GameInterfaceSBOClient(GameInterfaceSBO.GameInterfaceSBOClient client)
-    {
-        _client = client ?? throw new ArgumentNullException(nameof(client));
-    }
-
     public async ValueTask<string> CheckingServiceAsync(
         string machineName,
         CancellationToken cancellationToken = default)
@@ -22,7 +16,7 @@ internal class GameInterfaceSBOClient : IGameInterfaceSBOClient
             MachineName = machineName,
         };
 
-        var reply = await _client
+        var reply = await client
             .CheckingServiceAsync(
                 request: request,
                 cancellationToken: cancellationToken)
@@ -45,7 +39,7 @@ internal class GameInterfaceSBOClient : IGameInterfaceSBOClient
             CasinoTableLimit = casinoTableLimit
         };
 
-        _ = await _client.AgentPresetBetSettingsAsync(
+        _ = await client.AgentPresetBetSettingsAsync(
             request: request,
             cancellationToken: cancellationToken)
             .ConfigureAwait(false);
@@ -63,7 +57,7 @@ internal class GameInterfaceSBOClient : IGameInterfaceSBOClient
             Amount = amount
         };
 
-        return await _client.FundInAsync(
+        return await client.FundInAsync(
             request: request,
             cancellationToken: cancellationToken)
             .ConfigureAwait(false);
@@ -81,7 +75,7 @@ internal class GameInterfaceSBOClient : IGameInterfaceSBOClient
             Amount = amount
         };
 
-        return await _client.FundOutAsync(
+        return await client.FundOutAsync(
             request: request,
             cancellationToken: cancellationToken)
             .ConfigureAwait(false);
@@ -96,7 +90,7 @@ internal class GameInterfaceSBOClient : IGameInterfaceSBOClient
             OrderId = orderId
         };
 
-        var reply = await _client.FundStatusAsync(
+        var reply = await client.FundStatusAsync(
             request: request,
             cancellationToken: cancellationToken)
             .ConfigureAwait(false);
@@ -115,12 +109,12 @@ internal class GameInterfaceSBOClient : IGameInterfaceSBOClient
             EndTime = endTime.ToTimestamp()
         };
 
-        var reply = await _client.GameWagerBySportsBookAsync(
+        var reply = await client.GameWagerBySportsBookAsync(
             request: request,
             cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
-        if (!reply.Items.Any())
+        if (reply.Items.Count == 0)
         {
             yield break;
         }
@@ -142,12 +136,12 @@ internal class GameInterfaceSBOClient : IGameInterfaceSBOClient
             EndTime = endTime.ToTimestamp()
         };
 
-        var reply = await _client.GameWagerByVirtualSportsAsync(
+        var reply = await client.GameWagerByVirtualSportsAsync(
             request: request,
             cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
-        if (!reply.Items.Any())
+        if (reply.Items.Count == 0)
         {
             yield break;
         }
@@ -170,7 +164,7 @@ internal class GameInterfaceSBOClient : IGameInterfaceSBOClient
             IsMobile = isMobile
         };
 
-        return await _client.GameUrlBySportsBookAsync(
+        return await client.GameUrlBySportsBookAsync(
             request: request,
             cancellationToken: cancellationToken)
             .ConfigureAwait(false);
@@ -187,7 +181,7 @@ internal class GameInterfaceSBOClient : IGameInterfaceSBOClient
             Lang = lang
         };
 
-        return await _client.GameUrlByVirtualSportsAsync(
+        return await client.GameUrlByVirtualSportsAsync(
             request: request,
             cancellationToken: cancellationToken)
             .ConfigureAwait(false);
@@ -203,7 +197,7 @@ internal class GameInterfaceSBOClient : IGameInterfaceSBOClient
             PlayerCode = playerCode
         };
 
-        return await _client.PlayerBalanceAsync(
+        return await client.PlayerBalanceAsync(
             request: request,
             cancellationToken: cancellationToken)
             .ConfigureAwait(false);
@@ -219,7 +213,7 @@ internal class GameInterfaceSBOClient : IGameInterfaceSBOClient
             PlayerCode = playerCode
         };
 
-        _ = await _client.PlayerCreateAsync(
+        _ = await client.PlayerCreateAsync(
             request: request,
             cancellationToken: cancellationToken)
             .ConfigureAwait(false);
@@ -235,7 +229,7 @@ internal class GameInterfaceSBOClient : IGameInterfaceSBOClient
             PlayerCode = playerCode
         };
 
-        _ = await _client.PlayerKickAsync(
+        _ = await client.PlayerKickAsync(
             request: request,
             cancellationToken: cancellationToken)
             .ConfigureAwait(false);

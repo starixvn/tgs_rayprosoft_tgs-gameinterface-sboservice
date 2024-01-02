@@ -1,25 +1,28 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net7.0</TargetFramework>
+		<TargetFramework>net8.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<Version>0.0.12</Version>
+		<Version>0.0.13</Version>
 		<Authors>Raypro</Authors>
-		<Description>Tgs GameInterface SBO Client</Description>
 		<PackageProjectUrl>https://gitlab.com/rayprosoft/tgs-gameinterface-sboservice</PackageProjectUrl>
 		<RepositoryUrl>https://gitlab.com/rayprosoft/tgs-gameinterface-sboservice.git.git</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
-		<PackageTags>Tgs GameInterface SBOService</PackageTags>
+		<RootNamespace>Tgs.GameInterface.SBOService.Client</RootNamespace>
+		<PackageId>Tgs.GameInterface.SBOService.Client</PackageId>
+		<Title>Tgs.GameInterface.SBOService.Client</Title>
+		<Description>Tgs.GameInterface.SBOService.Client</Description>
+		<PackageTags>Tgs GameInterface SBOService Client</PackageTags>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Grpc.AspNetCore.Server.Reflection" Version="2.58.0" />
-		<PackageReference Include="Grpc.Net.ClientFactory" Version="2.58.0" />
-		<PackageReference Include="Grpc.Tools" Version="2.59.0">
+		<PackageReference Include="Grpc.AspNetCore.Server.Reflection" Version="2.59.0" />
+		<PackageReference Include="Grpc.Net.ClientFactory" Version="2.59.0" />
+		<PackageReference Include="Grpc.Tools" Version="2.60.0">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>

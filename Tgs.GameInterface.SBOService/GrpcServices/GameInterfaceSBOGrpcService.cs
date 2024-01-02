@@ -7,55 +7,25 @@ using Enum = System.Enum;
 
 namespace Tgs.GameInterface.SBOService.GrpcServices;
 
-public class GameInterfaceSBOGrpcService : GameInterfaceSBO.GameInterfaceSBOBase
+public class GameInterfaceSBOGrpcService(
+    ILogger<GameInterfaceSBOGrpcService> logger,
+    ICommandService<AgentPresetBetSettingsCommand> agentPresetBetSettingsService,
+    IGetService<FundInQuery, FundResult> fundInService,
+    IGetService<FundOutQuery, FundResult> fundOutService,
+    IGetService<FundStatusQuery, bool> fundStatusService,
+    IGetService<GameUrlBySportsBookQuery, GameUrlResult> gameUrlBySportsBookService,
+    IGetService<GameUrlByVirtualSportsQuery, GameUrlResult> gameUrlByVirtualSportsService,
+    IQueryService<GameWagerBySportsBookQuery, GameWagerResult> gameWagerBySportsBookService,
+    IQueryService<GameWagerByVirtualSportsQuery, GameWagerResult> gameWagerByVirtualSportsService,
+    IGetService<PlayerBalanceQuery, PlayerBalanceResult> playerBalanceService,
+    ICommandService<PlayerCreateCommand> playerCreateService,
+    ICommandService<PlayerKickCommand> playerKickService) : GameInterfaceSBO.GameInterfaceSBOBase
 {
-    private readonly ILogger<GameInterfaceSBOGrpcService> _logger;
-    private readonly ICommandService<AgentPresetBetSettingsCommand> _agentPresetBetSettingsService;
-    private readonly IGetService<FundInQuery, FundResult> _fundInService;
-    private readonly IGetService<FundOutQuery, FundResult> _fundOutService;
-    private readonly IGetService<FundStatusQuery, bool> _fundStatusService;
-    private readonly IGetService<GameUrlBySportsBookQuery, GameUrlResult> _gameUrlBySportsBookService;
-    private readonly IGetService<GameUrlByVirtualSportsQuery, GameUrlResult> _gameUrlByVirtualSportsService;
-    private readonly IQueryService<GameWagerBySportsBookQuery, GameWagerResult> _gameWagerBySportsBookService;
-    private readonly IQueryService<GameWagerByVirtualSportsQuery, GameWagerResult> _gameWagerByVirtualSportsService;
-    private readonly IGetService<PlayerBalanceQuery, PlayerBalanceResult> _playerBalanceService;
-    private readonly ICommandService<PlayerCreateCommand> _playerCreateService;
-    private readonly ICommandService<PlayerKickCommand> _playerKickService;
-
-    public GameInterfaceSBOGrpcService(
-        ILogger<GameInterfaceSBOGrpcService> logger,
-        ICommandService<AgentPresetBetSettingsCommand> agentPresetBetSettingsService,
-        IGetService<FundInQuery, FundResult> fundInService,
-        IGetService<FundOutQuery, FundResult> fundOutService,
-        IGetService<FundStatusQuery, bool> fundStatusService,
-        IGetService<GameUrlBySportsBookQuery, GameUrlResult> gameUrlBySportsBookService,
-        IGetService<GameUrlByVirtualSportsQuery, GameUrlResult> gameUrlByVirtualSportsService,
-        IQueryService<GameWagerBySportsBookQuery, GameWagerResult> gameWagerBySportsBookService,
-        IQueryService<GameWagerByVirtualSportsQuery, GameWagerResult> gameWagerByVirtualSportsService,
-        IGetService<PlayerBalanceQuery, PlayerBalanceResult> playerBalanceService,
-        ICommandService<PlayerCreateCommand> playerCreateService,
-        ICommandService<PlayerKickCommand> playerKickService
-        )
-    {
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _agentPresetBetSettingsService = agentPresetBetSettingsService ?? throw new ArgumentNullException(nameof(agentPresetBetSettingsService));
-        _fundInService = fundInService ?? throw new ArgumentNullException(nameof(fundInService));
-        _fundOutService = fundOutService ?? throw new ArgumentNullException(nameof(fundOutService));
-        _fundStatusService = fundStatusService ?? throw new ArgumentNullException(nameof(fundStatusService));
-        _gameUrlBySportsBookService = gameUrlBySportsBookService ?? throw new ArgumentNullException(nameof(gameUrlBySportsBookService));
-        _gameUrlByVirtualSportsService = gameUrlByVirtualSportsService ?? throw new ArgumentNullException(nameof(gameUrlByVirtualSportsService));
-        _gameWagerBySportsBookService = gameWagerBySportsBookService ?? throw new ArgumentNullException(nameof(gameWagerBySportsBookService));
-        _gameWagerByVirtualSportsService = gameWagerByVirtualSportsService ?? throw new ArgumentNullException(nameof(gameWagerByVirtualSportsService));
-        _playerBalanceService = playerBalanceService ?? throw new ArgumentNullException(nameof(playerBalanceService));
-        _playerCreateService = playerCreateService ?? throw new ArgumentNullException(nameof(playerCreateService));
-        _playerKickService = playerKickService ?? throw new ArgumentNullException(nameof(playerKickService));
-    }
-
     public override Task<CheckingServiceReply> CheckingService(
         CheckingServiceRequest request,
         ServerCallContext context)
     {
-        _logger.LogWarning("LogOn:{logOn} Message: Create a check connection.({machineName})", DateTime.Now.ToString("o"), request.MachineName);
+        logger.LogWarning("LogOn:{logOn} Message: Create a check connection.({machineName})", DateTime.Now.ToString("o"), request.MachineName);
 
         return Task.FromResult(new CheckingServiceReply
         {
@@ -77,7 +47,7 @@ public class GameInterfaceSBOGrpcService : GameInterfaceSBO.GameInterfaceSBOBase
             MaxPerMatch: request.MaxPerMatch,
             CasinoTableLimit: request.CasinoTableLimit);
 
-        await _agentPresetBetSettingsService.ExecuteAsync(
+        await agentPresetBetSettingsService.ExecuteAsync(
             command: command,
             cancellationToken: context.CancellationToken)
             .ConfigureAwait(false);
@@ -100,7 +70,7 @@ public class GameInterfaceSBOGrpcService : GameInterfaceSBO.GameInterfaceSBOBase
             OrderId: request.OrderId,
             Amount: request.Amount);
 
-        var result = await _fundInService.GetAsync(
+        var result = await fundInService.GetAsync(
             query: query,
             cancellationToken: context.CancellationToken)
             .ConfigureAwait(false);
@@ -124,7 +94,7 @@ public class GameInterfaceSBOGrpcService : GameInterfaceSBO.GameInterfaceSBOBase
             OrderId: request.OrderId,
             Amount: request.Amount);
 
-        var result = await _fundOutService.GetAsync(
+        var result = await fundOutService.GetAsync(
             query: query,
             cancellationToken: context.CancellationToken)
             .ConfigureAwait(false);
@@ -145,7 +115,7 @@ public class GameInterfaceSBOGrpcService : GameInterfaceSBO.GameInterfaceSBOBase
             CompanyKey: request.CompanyKey,
             OrderId: request.OrderId);
 
-        var result = await _fundStatusService.GetAsync(
+        var result = await fundStatusService.GetAsync(
             query: query,
             cancellationToken: context.CancellationToken)
             .ConfigureAwait(false);
@@ -167,7 +137,7 @@ public class GameInterfaceSBOGrpcService : GameInterfaceSBO.GameInterfaceSBOBase
             StartTime: request.StartTime.ToDateTimeOffset(),
             EndTime: request.EndTime.ToDateTimeOffset());
 
-        var gameWagers = await _gameWagerBySportsBookService.QueryAsync(
+        var gameWagers = await gameWagerBySportsBookService.QueryAsync(
             query: query,
             cancellationToken: context.CancellationToken)
             .ToArrayAsync(
@@ -176,7 +146,7 @@ public class GameInterfaceSBOGrpcService : GameInterfaceSBO.GameInterfaceSBOBase
 
         var reply = new GameWagerReply();
 
-        if (gameWagers.Any())
+        if (gameWagers.Length != 0)
         {
             foreach (var gameWager in gameWagers)
             {
@@ -211,7 +181,7 @@ public class GameInterfaceSBOGrpcService : GameInterfaceSBO.GameInterfaceSBOBase
             StartTime: request.StartTime.ToDateTimeOffset(),
             EndTime: request.EndTime.ToDateTimeOffset());
 
-        var gameWagers = await _gameWagerByVirtualSportsService.QueryAsync(
+        var gameWagers = await gameWagerByVirtualSportsService.QueryAsync(
             query: query,
             cancellationToken: context.CancellationToken)
             .ToArrayAsync(
@@ -220,7 +190,7 @@ public class GameInterfaceSBOGrpcService : GameInterfaceSBO.GameInterfaceSBOBase
 
         var reply = new GameWagerReply();
 
-        if (gameWagers.Any())
+        if (gameWagers.Length != 0)
         {
             foreach (var gameWager in gameWagers)
             {
@@ -256,7 +226,7 @@ public class GameInterfaceSBOGrpcService : GameInterfaceSBO.GameInterfaceSBOBase
             Lang: request.Lang,
             IsMobile: request.IsMobile);
 
-        var result = await _gameUrlBySportsBookService.GetAsync(
+        var result = await gameUrlBySportsBookService.GetAsync(
             query: query,
             cancellationToken: context.CancellationToken)
             .ConfigureAwait(false);
@@ -279,7 +249,7 @@ public class GameInterfaceSBOGrpcService : GameInterfaceSBO.GameInterfaceSBOBase
             PlayerCode: request.PlayerCode,
             Lang: request.Lang);
 
-        var result = await _gameUrlByVirtualSportsService.GetAsync(
+        var result = await gameUrlByVirtualSportsService.GetAsync(
             query: query,
             cancellationToken: context.CancellationToken)
             .ConfigureAwait(false);
@@ -301,7 +271,7 @@ public class GameInterfaceSBOGrpcService : GameInterfaceSBO.GameInterfaceSBOBase
             Agent: request.Agent,
             PlayerCode: request.PlayerCode);
 
-        var result = await _playerBalanceService.GetAsync(
+        var result = await playerBalanceService.GetAsync(
             query: query,
             cancellationToken: context.CancellationToken)
             .ConfigureAwait(false);
@@ -325,7 +295,7 @@ public class GameInterfaceSBOGrpcService : GameInterfaceSBO.GameInterfaceSBOBase
             Agent: request.Agent,
             PlayerCode: request.PlayerCode);
 
-        await _playerCreateService.ExecuteAsync(
+        await playerCreateService.ExecuteAsync(
             command: command,
             cancellationToken: context.CancellationToken)
             .ConfigureAwait(false);
@@ -346,7 +316,7 @@ public class GameInterfaceSBOGrpcService : GameInterfaceSBO.GameInterfaceSBOBase
             Agent: request.Agent,
             PlayerCode: request.PlayerCode);
 
-        await _playerKickService.ExecuteAsync(
+        await playerKickService.ExecuteAsync(
             command: command,
             cancellationToken: context.CancellationToken)
             .ConfigureAwait(false);

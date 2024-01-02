@@ -297,7 +297,7 @@ public class SBOController : ControllerBase
             cancellationToken: HttpContext.RequestAborted)
             .ConfigureAwait(false);
 
-        if (!gameWagers.Any())
+        if (gameWagers.Length == 0)
         {
             yield break;
         }
@@ -358,7 +358,7 @@ public class SBOController : ControllerBase
             cancellationToken: HttpContext.RequestAborted)
             .ConfigureAwait(false);
 
-        if (!gameWagers.Any())
+        if (gameWagers.Length == 0)
         {
             yield break;
         }

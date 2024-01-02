@@ -49,7 +49,7 @@ public class GameWagerByVirtualSportsQueryServiceUnitTest
             query)
             .ToArrayAsync();
 
-        Assert.False(actual.Any());
+        Assert.Empty(actual);
     }
 
     [Fact]

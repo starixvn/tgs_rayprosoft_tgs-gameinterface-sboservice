@@ -140,7 +140,7 @@ internal class GameApiClient : IGameApiClient
 
         var results = jsonNode["result"]!.AsArray();
 
-        if (!results.Any())
+        if (results.Count == 0)
         {
             yield break;
         }
@@ -206,7 +206,7 @@ internal class GameApiClient : IGameApiClient
 
         var results = jsonNode["result"]!.AsArray();
 
-        if (!results.Any())
+        if (results.Count == 0)
         {
             yield break;
         }

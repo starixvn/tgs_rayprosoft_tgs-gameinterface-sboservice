@@ -1,8 +1,5 @@
 ﻿namespace Tgs.GameInterface.SBOService.Core.Exceptions;
 
-public class GameProvisioningErrorException : Exception
+public class GameProvisioningErrorException(string error) : Exception($"Game Provisioning Error Messages.({error})")
 {
-    public GameProvisioningErrorException(string error) : base($"Game Provisioning Error Messages.({error})")
-    {
-    }
 }

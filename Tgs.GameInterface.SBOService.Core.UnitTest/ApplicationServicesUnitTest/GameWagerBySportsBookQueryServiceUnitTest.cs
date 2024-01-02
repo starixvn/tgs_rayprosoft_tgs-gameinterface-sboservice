@@ -51,7 +51,7 @@ public class GameWagerBySportsBookQueryServiceUnitTest
             query)
             .ToArrayAsync();
 
-        Assert.False(actual.Any());
+        Assert.Empty(actual);
     }
 
     [Fact]
