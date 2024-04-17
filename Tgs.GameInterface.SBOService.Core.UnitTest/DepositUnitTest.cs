@@ -6,38 +6,38 @@ namespace Tgs.GameInterface.SBOService.Core.UnitTest;
 
 public class DepositUnitTest
 {
-    [Fact]
-    public async Task Normal_Process()
-    {
-        var apiUrl = new Uri("https://ex-api-demo-yy.568win.com/");
-        var companyKey = "49ED28A987624CA0A3F834C3B8A69AAB";
-        var username = "4ucmqplxkuyd";
-        var txnId = Guid.NewGuid().ToString("N");
-        var amount = 1m;
+	[Fact]
+	public async Task Normal_Process()
+	{
+		var apiUrl = new Uri("https://ex-api-demo-yy.568win.com/");
+		var companyKey = "49ED28A987624CA0A3F834C3B8A69AAB";
+		var username = "4ucmqplxkuyd";
+		var txnId = Guid.NewGuid().ToString("N");
+		var amount = 1m;
 
-        var url = new Uri(apiUrl, "/web-root/restricted/player/deposit.aspx");
+		var url = new Uri(apiUrl, "/web-root/restricted/player/deposit.aspx");
 
-        var handler = new MockHttpMessageHandler();
-        _ = handler
-                .Expect(HttpMethod.Post, url.ToString())
-                .Respond(
-                    HttpStatusCode.OK,
-                    new StringContent("{\"txnId\":\"D20190208190823090\",\"refno\":\"" + txnId + "\",\"balance\":1,\"outstanding\":0,\"serverId\":\"YY-demoanduat\",\"error\":{\"id\":0,\"msg\":\"No Error\"}}"));
+		var handler = new MockHttpMessageHandler();
+		_ = handler
+				.Expect(HttpMethod.Post, url.ToString())
+				.Respond(
+					HttpStatusCode.OK,
+					new StringContent("{\"txnId\":\"D20190208190823090\",\"refno\":\"" + txnId + "\",\"balance\":1,\"outstanding\":0,\"serverId\":\"YY-demoanduat\",\"error\":{\"id\":0,\"msg\":\"No Error\"}}"));
 
-        var fakeLog = NullLogger<GameApiClient>.Instance;
-        var fakeHttpClient = handler.ToHttpClient();
+		var fakeLog = NullLogger<GameApiClient>.Instance;
+		var fakeHttpClient = handler.ToHttpClient();
 
-        var client = new GameApiClient(
-            fakeLog,
-            fakeHttpClient);
+		var client = new GameApiClient(
+			fakeLog,
+			fakeHttpClient);
 
-        var actual = await client.DepositAsync(
-            apiUrl: apiUrl,
-            companyKey: companyKey,
-            username: username,
-            txnId: txnId,
-            amount: amount);
+		var actual = await client.DepositAsync(
+			apiUrl: apiUrl,
+			companyKey: companyKey,
+			username: username,
+			txnId: txnId,
+			amount: amount);
 
-        Assert.Equal("D20190208190823090", actual.TxnId);
-    }
+		Assert.Equal("D20190208190823090", actual.TxnId);
+	}
 }

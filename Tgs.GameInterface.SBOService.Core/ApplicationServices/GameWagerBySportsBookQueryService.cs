@@ -5,22 +5,22 @@ namespace Tgs.GameInterface.SBOService.Core.ApplicationServices;
 
 internal class GameWagerBySportsBookQueryService(IGameApiClient client) : IQueryService<GameWagerBySportsBookQuery, GameWagerResult>
 {
-    public async IAsyncEnumerable<GameWagerResult> QueryAsync(
-        GameWagerBySportsBookQuery query,
-        [EnumeratorCancellation] CancellationToken cancellationToken = default)
-    {
-        var responses = await client.GetBetListByModifyDateAgentBySportsBookAsync(
-            apiUrl: query.ApiUrl,
-            companyKey: query.CompanyKey,
-            agent: query.Agent,
-            startTime: query.StartTime,
-            endTime: query.EndTime,
-            cancellationToken: cancellationToken)
-            .ToArrayAsync(
-            cancellationToken: cancellationToken)
-            .ConfigureAwait(false);
+	public async IAsyncEnumerable<GameWagerResult> QueryAsync(
+		GameWagerBySportsBookQuery query,
+		[EnumeratorCancellation] CancellationToken cancellationToken = default)
+	{
+		var responses = await client.GetBetListByModifyDateAgentBySportsBookAsync(
+			apiUrl: query.ApiUrl,
+			companyKey: query.CompanyKey,
+			agent: query.Agent,
+			startTime: query.StartTime,
+			endTime: query.EndTime,
+			cancellationToken: cancellationToken)
+			.ToArrayAsync(
+			cancellationToken: cancellationToken)
+			.ConfigureAwait(false);
 
-        /*
+		/*
          * 您好，请见以下分类，谢谢您。
          *
          * 未结算：
@@ -34,45 +34,45 @@ internal class GameWagerBySportsBookQueryService(IGameApiClient client) : IQuery
          * 作废：
          *  void
          */
-        var gameRecords = responses.Where(x =>
-            x.Status.Equals("running", StringComparison.OrdinalIgnoreCase) ||
-            x.Status.Equals("draw", StringComparison.OrdinalIgnoreCase) ||
-            x.Status.Equals("lose", StringComparison.OrdinalIgnoreCase) ||
-            x.Status.Equals("won", StringComparison.OrdinalIgnoreCase) ||
-            x.Status.Equals("void", StringComparison.OrdinalIgnoreCase))
-            .Select(x => new GameWagerResult(
-                PlayerCode: x.PlayerCode,
-                ExternalWagerId: x.ExternalWagerId,
-                ExternalGameId: x.SportsType,
-                Status: x.Status,
-                ExternalCreatedOn: x.OrderTime,
-                ExternalClosedOn: x.SettleTime,
-                Bet: x.Bet,
-                ValidBet: x.ValidBet,
-                PlayerWinLoss: x.Status switch
-                {
-                    var status when status.Equals("running", StringComparison.OrdinalIgnoreCase) => 0,
-                    var status when status.Equals("void", StringComparison.OrdinalIgnoreCase) => 0,
-                    _ => x.PlayerWinLoss
-                },
-                Turnover: x.Turnover,
-                Settle: x.Status switch
-                {
-                    var status when status.Equals("running", StringComparison.OrdinalIgnoreCase) => 0,
-                    var status when status.Equals("void", StringComparison.OrdinalIgnoreCase) => x.PlayerWinLoss,
-                    _ => x.PlayerWinLoss + x.ValidBet
-                },
-                AdditionalData: x.AdditionalData))
-            .AsQueryable();
+		var gameRecords = responses.Where(x =>
+			x.Status.Equals("running", StringComparison.OrdinalIgnoreCase) ||
+			x.Status.Equals("draw", StringComparison.OrdinalIgnoreCase) ||
+			x.Status.Equals("lose", StringComparison.OrdinalIgnoreCase) ||
+			x.Status.Equals("won", StringComparison.OrdinalIgnoreCase) ||
+			x.Status.Equals("void", StringComparison.OrdinalIgnoreCase))
+			.Select(x => new GameWagerResult(
+				PlayerCode: x.PlayerCode,
+				ExternalWagerId: x.ExternalWagerId,
+				ExternalGameId: x.SportsType,
+				Status: x.Status,
+				ExternalCreatedOn: x.OrderTime,
+				ExternalClosedOn: x.SettleTime,
+				Bet: x.Bet,
+				ValidBet: x.ValidBet,
+				PlayerWinLoss: x.Status switch
+				{
+					var status when status.Equals("running", StringComparison.OrdinalIgnoreCase) => 0,
+					var status when status.Equals("void", StringComparison.OrdinalIgnoreCase) => 0,
+					_ => x.PlayerWinLoss
+				},
+				Turnover: x.Turnover,
+				Settle: x.Status switch
+				{
+					var status when status.Equals("running", StringComparison.OrdinalIgnoreCase) => 0,
+					var status when status.Equals("void", StringComparison.OrdinalIgnoreCase) => x.PlayerWinLoss,
+					_ => x.PlayerWinLoss + x.ValidBet
+				},
+				AdditionalData: x.AdditionalData))
+			.AsQueryable();
 
-        if (!gameRecords.Any())
-        {
-            yield break;
-        }
+		if (!gameRecords.Any())
+		{
+			yield break;
+		}
 
-        foreach (var gameRecord in gameRecords.AsEnumerable())
-        {
-            yield return gameRecord;
-        }
-    }
+		foreach (var gameRecord in gameRecords.AsEnumerable())
+		{
+			yield return gameRecord;
+		}
+	}
 }

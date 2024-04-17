@@ -2,5 +2,5 @@
 
 public interface IUserNameUtensils
 {
-    public string GetUserName(string agent, string playerCode);
+	public string GetUserName(string agent, string playerCode);
 }

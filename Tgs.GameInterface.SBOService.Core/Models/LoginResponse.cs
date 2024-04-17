@@ -2,6 +2,6 @@
 
 public record LoginResponse
 {
-    public bool IsPlayerExist { get; init; }
-    public string GameUrl { get; init; } = default!;
+	public bool IsPlayerExist { get; init; }
+	public string GameUrl { get; init; } = default!;
 }

@@ -2,5 +2,5 @@
 
 public class GameInterfaceSBOClientOptions
 {
-    public Uri BaseUrl { get; set; } = default!;
+	public Uri BaseUrl { get; set; } = default!;
 }

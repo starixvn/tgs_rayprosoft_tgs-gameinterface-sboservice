@@ -1,6 +1,6 @@
 ﻿namespace Tgs.GameInterface.SBOService.Core.ApplicationServices;
 
 public record FundStatusQuery(
-    Uri ApiUrl,
-    string CompanyKey,
-    string OrderId);
+	Uri ApiUrl,
+	string CompanyKey,
+	string OrderId);

@@ -2,8 +2,8 @@
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddGameInterfaceService(
-        this IServiceCollection services)
-        => services
-            .AddGameInterfaceCore();
+	public static IServiceCollection AddGameInterfaceService(
+		this IServiceCollection services)
+		=> services
+			.AddGameInterfaceCore();
 }
