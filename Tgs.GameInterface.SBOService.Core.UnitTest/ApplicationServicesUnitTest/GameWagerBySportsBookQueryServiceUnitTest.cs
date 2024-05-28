@@ -19,7 +19,7 @@ public class GameWagerBySportsBookQueryServiceUnitTest
 			DateTime.Parse("2022-09-22 16:30:00 +08:00"),
 			DateTime.Parse("2022-09-22 17:00:00 +08:00"));
 
-		var response = new BetBySeamlessGameResponse(
+		var response = new BetBySportsBookResponse(
 			ExternalWagerId: "4471911",
 			PlayerCode: "4ucmqplxkuyd",
 			SportsType: "Football",
@@ -42,7 +42,7 @@ public class GameWagerBySportsBookQueryServiceUnitTest
 				Arg.Is(query.Agent),
 				Arg.Is(query.StartTime),
 				Arg.Is(query.EndTime))
-			 .Returns(new BetBySeamlessGameResponse[] { response
+			 .Returns(new BetBySportsBookResponse[] { response
 			 }.ToAsyncEnumerable());
 
 		var service = new GameWagerBySportsBookQueryService(fakeGameApiClient);
@@ -66,7 +66,7 @@ public class GameWagerBySportsBookQueryServiceUnitTest
 			DateTime.Parse("2022-09-22 16:30:00 +08:00"),
 			DateTime.Parse("2022-09-22 17:00:00 +08:00"));
 
-		var response = new BetBySeamlessGameResponse(
+		var response = new BetBySportsBookResponse(
 			ExternalWagerId: "72344677",
 			PlayerCode: "4ucmqplxkuyd",
 			SportsType: "Football",
@@ -89,7 +89,7 @@ public class GameWagerBySportsBookQueryServiceUnitTest
 				Arg.Is(query.Agent),
 				Arg.Is(query.StartTime),
 				Arg.Is(query.EndTime))
-			 .Returns(new BetBySeamlessGameResponse[] { response }.ToAsyncEnumerable());
+			 .Returns(new BetBySportsBookResponse[] { response }.ToAsyncEnumerable());
 
 		var service = new GameWagerBySportsBookQueryService(fakeGameApiClient);
 
@@ -120,7 +120,7 @@ public class GameWagerBySportsBookQueryServiceUnitTest
 			DateTime.Parse("2022-10-30T00:39:43.417-04:00"),
 			DateTime.Parse("2022-10-30T02:06:53.25-04:00"));
 
-		var response = new BetBySeamlessGameResponse(
+		var response = new BetBySportsBookResponse(
 			ExternalWagerId: "72347399",
 			PlayerCode: "4uhiw6g8yyn1",
 			SportsType: "Football",
@@ -143,7 +143,7 @@ public class GameWagerBySportsBookQueryServiceUnitTest
 				Arg.Is(query.Agent),
 				Arg.Is(query.StartTime),
 				Arg.Is(query.EndTime))
-			 .Returns(new BetBySeamlessGameResponse[] { response }.ToAsyncEnumerable());
+			 .Returns(new BetBySportsBookResponse[] { response }.ToAsyncEnumerable());
 
 		var service = new GameWagerBySportsBookQueryService(fakeGameApiClient);
 
@@ -174,7 +174,7 @@ public class GameWagerBySportsBookQueryServiceUnitTest
 			DateTime.Parse("2022-10-30T00:24:01.393-04:00"),
 			DateTime.Parse("2022-10-30T00:49:35.797-04:00"));
 
-		var response = new BetBySeamlessGameResponse(
+		var response = new BetBySportsBookResponse(
 			ExternalWagerId: "72345565",
 			PlayerCode: "4uhiw6g8yyn1",
 			SportsType: "Football",
@@ -197,7 +197,7 @@ public class GameWagerBySportsBookQueryServiceUnitTest
 				Arg.Is(query.Agent),
 				Arg.Is(query.StartTime),
 				Arg.Is(query.EndTime))
-			 .Returns(new BetBySeamlessGameResponse[] { response }.ToAsyncEnumerable());
+			 .Returns(new BetBySportsBookResponse[] { response }.ToAsyncEnumerable());
 
 		var service = new GameWagerBySportsBookQueryService(fakeGameApiClient);
 
@@ -228,7 +228,7 @@ public class GameWagerBySportsBookQueryServiceUnitTest
 			DateTime.Parse("2022-10-27T05:21:44.907-04:00"),
 			DateTime.Parse("2022-10-27T05:51:29.67-04:00"));
 
-		var response = new BetBySeamlessGameResponse(
+		var response = new BetBySportsBookResponse(
 			ExternalWagerId: "71806058",
 			PlayerCode: "4uhiw6g8yyn1",
 			SportsType: "Football",
@@ -251,7 +251,7 @@ public class GameWagerBySportsBookQueryServiceUnitTest
 				Arg.Is(query.Agent),
 				Arg.Is(query.StartTime),
 				Arg.Is(query.EndTime))
-			 .Returns(new BetBySeamlessGameResponse[] { response }.ToAsyncEnumerable());
+			 .Returns(new BetBySportsBookResponse[] { response }.ToAsyncEnumerable());
 
 		var service = new GameWagerBySportsBookQueryService(fakeGameApiClient);
 

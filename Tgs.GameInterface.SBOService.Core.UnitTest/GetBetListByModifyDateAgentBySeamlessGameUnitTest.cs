@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Globalization;
+using System.Net;
 using Microsoft.Extensions.Logging.Abstractions;
 using RichardSzalay.MockHttp;
 
@@ -19,10 +20,10 @@ public class GetBetListByModifyDateAgentBySeamlessGameUnitTest
 
 		var handler = new MockHttpMessageHandler();
 		_ = handler
-				.Expect(HttpMethod.Post, url.ToString())
-				.Respond(
-					HttpStatusCode.OK,
-					new StringContent("{\"result\":[{\"subBet\":[{\"betOption\":\"e-Argentina\",\"marketType\":\"Handicap\",\"sportType\":\"Football\",\"hdp\":-0.25,\"odds\":0.82,\"league\":\"e-Football F22 International Friendly\",\"match\":\"e-Poland vs e-Argentina\",\"status\":\"lose\",\"winlostDate\":\"2022-09-22T00:00:00\",\"liveScore\":\"1:3\",\"htScore\":\"1:3\",\"ftScore\":\"1:3\",\"customeizedBetType\":\"\",\"kickOffTime\":\"2022-09-22T04:00:00\",\"isHalfWonLose\":true}],\"sportsType\":\"Football\",\"odds\":0.82,\"oddsStyle\":\"M\",\"isLive\":true,\"maxWinWithoutActualStake\":4.1,\"ip\":\"220.132.206.70\",\"isSystemTagRisky\":false,\"isCustomerTagRisky\":false,\"voidReason\":\"\",\"actualStake\":5.0,\"turnover\":5.0,\"isHalfWonLose\":true,\"turnoverByStake\":5.0,\"turnoverByActualStake\":5.0,\"netTurnoverByStake\":2.5,\"netTurnoverByActualStake\":2.5,\"orderTime\":\"2022-09-22T04:18:31.42\",\"modifyDate\":\"2022-09-22T04:33:22.737\",\"settleTime\":\"2022-09-22T04:33:15.573\",\"winLostDate\":\"2022-09-22T00:00:00\",\"refNo\":\"4471911\",\"username\":\"STAG_4ucmqplxkuyd\",\"currency\":\"CNY\",\"stake\":5.0,\"winLost\":-2.5,\"status\":\"lose\",\"topDownline\":\"TGS\"}],\"serverId\":\"YY-demoanduat\",\"error\":{\"id\":0,\"msg\":\"No Error\"}}"));
+			.Expect(HttpMethod.Post, url.ToString())
+			.Respond(
+				statusCode: HttpStatusCode.OK,
+				content: new StringContent("{\"result\":[{\"mainBetRef\":null,\"gamePeriodId\":\"Funky_fkg_300344324231\",\"gameRoundId\":\"Funky_fkg_300344324231\",\"gameType\":\"FunkyGames\",\"turnoverStake\":1.0,\"orderDetail\":\"\",\"gameResult\":\"Funky_fkg_300344324231\",\"gameId\":285,\"gpId\":16,\"isGameProviderPromotion\":false,\"orderTime\":\"2024-05-20T06:58:28.707\",\"modifyDate\":\"2024-05-20T06:58:36.077\",\"settleTime\":\"2024-05-20T06:58:36.077\",\"winLostDate\":\"2024-05-20T00:00:00.000\",\"refNo\":\"FunkyGames_55440870_Funky_fkg_300344324231\",\"username\":\"PROD_4umv4giizorc\",\"currency\":\"IDR\",\"stake\":1.0,\"winLost\":0.66,\"status\":\"won\",\"topDownline\":null}],\"serverId\":\"YY-production\",\"error\":{\"id\":0,\"msg\":\"No Error\"}}"));
 
 		var fakeLog = NullLogger<GameApiClient>.Instance;
 		var fakeHttpClient = handler.ToHttpClient();
@@ -31,7 +32,7 @@ public class GetBetListByModifyDateAgentBySeamlessGameUnitTest
 			fakeLog,
 			fakeHttpClient);
 
-		var actual = await client.GetBetListByModifyDateAgentBySportsBookAsync(
+		var actual = await client.GetBetListByModifyDateAgentBySeamlessGameAsync(
 			apiUrl: apiUrl,
 			companyKey: companyKey,
 			agent: agent,
@@ -40,7 +41,17 @@ public class GetBetListByModifyDateAgentBySeamlessGameUnitTest
 			.ToArrayAsync();
 
 		Assert.NotEmpty(actual);
-		Assert.Equal("4ucmqplxkuyd", actual[0].PlayerCode);
-		Assert.Equal("4471911", actual[0].ExternalWagerId);
+		Assert.Equal("Funky_fkg_300344324231", actual[0].ExternalRoundId);
+		Assert.Equal("FunkyGames_55440870_Funky_fkg_300344324231", actual[0].ExternalWagerId);
+		Assert.Equal("FunkyGames", actual[0].GameType);
+		Assert.Equal("4umv4giizorc", actual[0].PlayerCode);
+		Assert.Equal("won", actual[0].Status);
+		Assert.Equal(DateTimeOffset.Parse("2024-05-20T06:58:28.707 -04:00"), actual[0].OrderTime);
+		Assert.Equal(DateTimeOffset.Parse("2024-05-20T06:58:36.077  -04:00"), actual[0].ModifyDate);
+		Assert.Equal(DateTimeOffset.Parse("2024-05-20T06:58:36.077  -04:00"), actual[0].SettleTime);
+		Assert.Equal(DateTimeOffset.Parse("2024-05-20T00:00:00.000  -04:00"), actual[0].WinLostDate);
+		Assert.Equal(1.0m, actual[0].Bet);
+		Assert.Equal(1.0m, actual[0].Turnover);
+		Assert.Equal(0.66m, actual[0].WinLoss);
 	}
 }

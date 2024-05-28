@@ -43,24 +43,24 @@ internal class GameWagerBySeamlessGameQueryService(IGameApiClient client) : IQue
 			.Select(x => new GameWagerResult(
 				PlayerCode: x.PlayerCode,
 				ExternalWagerId: x.ExternalWagerId,
-				ExternalGameId: x.SportsType,
+				ExternalGameId: x.GameType,
 				Status: x.Status,
 				ExternalCreatedOn: x.OrderTime,
 				ExternalClosedOn: x.SettleTime,
 				Bet: x.Bet,
-				ValidBet: x.ValidBet,
+				ValidBet: x.Turnover,
 				PlayerWinLoss: x.Status switch
 				{
 					var status when status.Equals("running", StringComparison.OrdinalIgnoreCase) => 0,
 					var status when status.Equals("void", StringComparison.OrdinalIgnoreCase) => 0,
-					_ => x.PlayerWinLoss
+					_ => x.WinLoss
 				},
 				Turnover: x.Turnover,
 				Settle: x.Status switch
 				{
 					var status when status.Equals("running", StringComparison.OrdinalIgnoreCase) => 0,
-					var status when status.Equals("void", StringComparison.OrdinalIgnoreCase) => x.PlayerWinLoss,
-					_ => x.PlayerWinLoss + x.ValidBet
+					var status when status.Equals("void", StringComparison.OrdinalIgnoreCase) => x.WinLoss,
+					_ => x.WinLoss + x.Turnover
 				},
 				AdditionalData: x.AdditionalData))
 			.AsQueryable();

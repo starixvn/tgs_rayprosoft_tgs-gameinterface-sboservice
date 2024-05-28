@@ -40,8 +40,19 @@ public class GetBetListByModifyDateAgentByVirtualSportsUnitTest
 			.ToArrayAsync();
 
 		Assert.NotEmpty(actual);
-		Assert.Equal("4ucmqplxkuyd", actual[0].PlayerCode);
 		Assert.Equal("B2683156", actual[0].ExternalWagerId);
+		Assert.Equal("VirtualFootballDesktop", actual[0].ProductType);
+		Assert.Equal("4ucmqplxkuyd", actual[0].PlayerCode);
+		Assert.Equal("won", actual[0].Status);
+		Assert.Equal(DateTimeOffset.Parse("2022-09-22T04:19:40.217 -04:00"), actual[0].OrderTime);
+		Assert.Equal(DateTimeOffset.Parse("2022-09-22T04:54:37.643  -04:00"), actual[0].ModifyDate);
+		Assert.Equal(DateTimeOffset.Parse("2022-09-22T04:54:28.963  -04:00"), actual[0].SettleTime);
+		Assert.Equal(DateTimeOffset.Parse("2022-09-22T00:00:00 -04:00"), actual[0].WinLostDate);
+		Assert.Equal(3.0m, actual[0].Bet);
+		Assert.Equal(1.92m, actual[0].ValidBet);
+		Assert.Equal(3.0m, actual[0].Turnover);
+		Assert.Equal(3.0m, actual[0].PlayerWinLoss);
+		Assert.NotEmpty(actual);
 	}
 
 	[Fact]
@@ -78,8 +89,18 @@ public class GetBetListByModifyDateAgentByVirtualSportsUnitTest
 			.ToArrayAsync();
 
 		Assert.NotEmpty(actual);
-		Assert.Equal("4ucmqplxkuyd", actual[0].PlayerCode);
 		Assert.Equal("B2683157", actual[0].ExternalWagerId);
+		Assert.Equal("VirtualFootballDesktop", actual[0].ProductType);
+		Assert.Equal("4ucmqplxkuyd", actual[0].PlayerCode);
 		Assert.Equal("running", actual[0].Status);
+		Assert.Equal(DateTimeOffset.Parse("2022-09-22T04:59:15.467 -04:00"), actual[0].OrderTime);
+		Assert.Equal(DateTimeOffset.Parse("2022-09-22T04:59:17.683  -04:00"), actual[0].ModifyDate);
+		Assert.Equal(DateTimeOffset.Parse("2022-09-22T04:59:15.543  -04:00"), actual[0].SettleTime);
+		Assert.Equal(DateTimeOffset.Parse("0001-01-01T00:00:00 -04:00"), actual[0].WinLostDate);
+		Assert.Equal(3.0m, actual[0].Bet);
+		Assert.Equal(3.0m, actual[0].ValidBet);
+		Assert.Equal(3.0m, actual[0].Turnover);
+		Assert.Equal(0.0m, actual[0].PlayerWinLoss);
+		Assert.NotEmpty(actual);
 	}
 }

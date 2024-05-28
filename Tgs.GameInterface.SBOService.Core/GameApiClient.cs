@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Globalization;
 using System.Net.Mime;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -9,36 +8,14 @@ using Microsoft.Extensions.Logging;
 using Polly;
 using Tgs.GameInterface.SBOService.Core.Exceptions;
 using Tgs.GameInterface.SBOService.Core.Extensions;
-using Tgs.GameInterface.SBOService.Core.JsonConverters;
 using Tgs.GameInterface.SBOService.Core.Models;
 
 namespace Tgs.GameInterface.SBOService.Core;
 
-internal class GameApiClient : IGameApiClient
+internal class GameApiClient(
+	ILogger<GameApiClient> logger,
+	HttpClient httpClient) : IGameApiClient
 {
-	private readonly ILogger<GameApiClient> _logger;
-	private readonly HttpClient _httpClient;
-	private readonly TimeZoneInfo _timeZone;
-	private readonly JsonSerializerOptions _jsonSerializerOptions;
-
-	public GameApiClient(
-		ILogger<GameApiClient> logger,
-		HttpClient httpClient)
-	{
-		_logger = logger ?? throw new ArgumentNullException(nameof(logger));
-		_httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
-		_timeZone = TimeZoneInfo.CreateCustomTimeZone(id: "eastern time", baseUtcOffset: TimeSpan.FromHours(-4), "eastern time", "eastern time");
-		_jsonSerializerOptions = new JsonSerializerOptions
-		{
-			PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-			NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString,
-			DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault,
-			Converters = {
-				new SBODateTimeConverter()
-			}
-		};
-	}
-
 	public async ValueTask<bool> CheckTransactionStatusAsync(Uri apiUrl, string companyKey, string txnId, CancellationToken cancellationToken = default)
 	{
 		var url = new Uri(apiUrl, "/web-root/restricted/player/check-transaction-status.aspx");
@@ -93,9 +70,6 @@ internal class GameApiClient : IGameApiClient
 
 	public async IAsyncEnumerable<BetBySeamlessGameResponse> GetBetListByModifyDateAgentBySeamlessGameAsync(Uri apiUrl, string companyKey, string agent, DateTimeOffset startTime, DateTimeOffset endTime, [EnumeratorCancellation] CancellationToken cancellationToken = default)
 	{
-		var startTimeEastern = TimeZoneInfo.ConvertTime(startTime.ToUniversalTime(), _timeZone);
-		var endTimeEastern = TimeZoneInfo.ConvertTime(endTime.ToUniversalTime(), _timeZone);
-
 		var url = new Uri(apiUrl, "/web-root/restricted/report/get-bet-list-by-modify-date.aspx");
 
 		JsonObject request = new JsonObject
@@ -103,8 +77,8 @@ internal class GameApiClient : IGameApiClient
 			{ "CompanyKey", companyKey },
 			{ "Username", agent },
 			{ "Portfolio", "SeamlessGame" },
-			{ "StartDate", startTimeEastern.ToString("yyyy-MM-ddTHH:mm:ss.fffZ") },
-			{ "EndDate", endTimeEastern.ToString("yyyy-MM-ddTHH:mm:ss.fffZ") },
+			{ "StartDate", startTime.DatetimeConvertToString() },
+			{ "EndDate",endTime.DatetimeConvertToString() },
 			{ "Language","en" }
 		};
 
@@ -130,20 +104,19 @@ internal class GameApiClient : IGameApiClient
 		}
 
 		var betTransactions = results.Select(x => new BetBySeamlessGameResponse(
-				ExternalWagerId: x!["refNo"]!.ToString(),
-				PlayerCode: x["username"]!.ToString().Split("_")[1],
-				SportsType: x["sportsType"]!.ToString(),
-				Status: x["status"]!.ToString(),
-				OrderTime: DateTimeOffset.Parse(x["orderTime"]!.ToString(), null, DateTimeStyles.AssumeUniversal),
-				ModifyDate: DateTimeOffset.Parse(x["modifyDate"]!.ToString(), null, DateTimeStyles.AssumeUniversal),
-				SettleTime: DateTimeOffset.Parse(x["settleTime"]!.ToString(), null, DateTimeStyles.AssumeUniversal),
-				WinLostDate: DateTimeOffset.Parse(x["winLostDate"]!.ToString(), null, DateTimeStyles.AssumeUniversal),
-				Bet: decimal.Parse(x["stake"]!.ToString()),
-				ValidBet: decimal.Parse(x["actualStake"]!.ToString()),
-				Turnover: decimal.Parse(x["turnover"]!.ToString()),
-				PlayerWinLoss: decimal.Parse(x["winLost"]!.ToString()),
-				AdditionalData: x.ToJsonString()
-			)) ?? [];
+			ExternalRoundId: x!["gameRoundId"]!.ToString(),
+			ExternalWagerId: x!["refNo"]!.ToString(),
+			GameType: x!["gameType"]!.ToString(),
+			PlayerCode: x["username"]!.ToString().Split("_")[1],
+			Status: x["status"]!.ToString(),
+			OrderTime: x["orderTime"]!.ToString().StringConvertToDatetime(),
+			ModifyDate: x["modifyDate"]!.ToString().ToString().StringConvertToDatetime(),
+			SettleTime: x["settleTime"]!.ToString().ToString().StringConvertToDatetime(),
+			WinLostDate: x["winLostDate"]!.ToString().ToString().StringConvertToDatetime(),
+			Bet: decimal.Parse(x["stake"]!.ToString()),
+			Turnover: decimal.Parse(x["turnoverStake"]!.ToString()),
+			WinLoss: decimal.Parse(x["winLost"]!.ToString()),
+			AdditionalData: x.ToJsonString())) ?? [];
 
 		foreach (var betTransaction in betTransactions)
 		{
@@ -151,11 +124,8 @@ internal class GameApiClient : IGameApiClient
 		}
 	}
 
-	public async IAsyncEnumerable<BetBySeamlessGameResponse> GetBetListByModifyDateAgentBySportsBookAsync(Uri apiUrl, string companyKey, string agent, DateTimeOffset startTime, DateTimeOffset endTime, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+	public async IAsyncEnumerable<BetBySportsBookResponse> GetBetListByModifyDateAgentBySportsBookAsync(Uri apiUrl, string companyKey, string agent, DateTimeOffset startTime, DateTimeOffset endTime, [EnumeratorCancellation] CancellationToken cancellationToken = default)
 	{
-		var startTimeEastern = TimeZoneInfo.ConvertTime(startTime.ToUniversalTime(), _timeZone);
-		var endTimeEastern = TimeZoneInfo.ConvertTime(endTime.ToUniversalTime(), _timeZone);
-
 		var url = new Uri(apiUrl, "/web-root/restricted/report/get-bet-list-by-modify-date.aspx");
 
 		JsonObject request = new JsonObject
@@ -163,8 +133,8 @@ internal class GameApiClient : IGameApiClient
 			{ "CompanyKey", companyKey },
 			{ "Username", agent },
 			{ "Portfolio", "SportsBook" },
-			{ "StartDate", startTimeEastern.ToString("yyyy-MM-ddTHH:mm:ss.fffZ") },
-			{ "EndDate", endTimeEastern.ToString("yyyy-MM-ddTHH:mm:ss.fffZ") },
+			{ "StartDate", startTime.DatetimeConvertToString() },
+			{ "EndDate",endTime.DatetimeConvertToString() },
 			{ "Language","en" }
 		};
 
@@ -189,15 +159,15 @@ internal class GameApiClient : IGameApiClient
 			yield break;
 		}
 
-		var betTransactions = results.Select(x => new BetBySeamlessGameResponse(
+		var betTransactions = results.Select(x => new BetBySportsBookResponse(
 				ExternalWagerId: x!["refNo"]!.ToString(),
 				PlayerCode: x["username"]!.ToString().Split("_")[1],
 				SportsType: x["sportsType"]!.ToString(),
 				Status: x["status"]!.ToString(),
-				OrderTime: DateTimeOffset.Parse(x["orderTime"]!.ToString(), null, DateTimeStyles.AssumeUniversal),
-				ModifyDate: DateTimeOffset.Parse(x["modifyDate"]!.ToString(), null, DateTimeStyles.AssumeUniversal),
-				SettleTime: DateTimeOffset.Parse(x["settleTime"]!.ToString(), null, DateTimeStyles.AssumeUniversal),
-				WinLostDate: DateTimeOffset.Parse(x["winLostDate"]!.ToString(), null, DateTimeStyles.AssumeUniversal),
+				OrderTime: x["orderTime"]!.ToString().ToString().StringConvertToDatetime(),
+				ModifyDate: x["modifyDate"]!.ToString().ToString().StringConvertToDatetime(),
+				SettleTime: x["settleTime"]!.ToString().ToString().StringConvertToDatetime(),
+				WinLostDate: x["winLostDate"]!.ToString().ToString().StringConvertToDatetime(),
 				Bet: decimal.Parse(x["stake"]!.ToString()),
 				ValidBet: decimal.Parse(x["actualStake"]!.ToString()),
 				Turnover: decimal.Parse(x["turnover"]!.ToString()),
@@ -213,9 +183,6 @@ internal class GameApiClient : IGameApiClient
 
 	public async IAsyncEnumerable<BetByVirtualSportsResponse> GetBetListByModifyDateAgentByVirtualSportsAsync(Uri apiUrl, string companyKey, string agent, DateTimeOffset startTime, DateTimeOffset endTime, [EnumeratorCancellation] CancellationToken cancellationToken = default)
 	{
-		var startTimeEastern = TimeZoneInfo.ConvertTime(startTime.ToUniversalTime(), _timeZone);
-		var endTimeEastern = TimeZoneInfo.ConvertTime(endTime.ToUniversalTime(), _timeZone);
-
 		var url = new Uri(apiUrl, "/web-root/restricted/report/get-bet-list-by-modify-date.aspx");
 
 		JsonObject request = new JsonObject
@@ -223,8 +190,8 @@ internal class GameApiClient : IGameApiClient
 			{ "CompanyKey", companyKey },
 			{ "Username", agent },
 			{ "Portfolio", "VirtualSports" },
-			{ "StartDate", startTimeEastern.ToString("yyyy-MM-ddTHH:mm:ss.fffZ") },
-			{ "EndDate", endTimeEastern.ToString("yyyy-MM-ddTHH:mm:ss.fffZ") },
+			{ "StartDate", startTime.DatetimeConvertToString() },
+			{ "EndDate",endTime.DatetimeConvertToString() },
 			{ "Language","en" }
 		};
 
@@ -254,10 +221,10 @@ internal class GameApiClient : IGameApiClient
 				PlayerCode: x["username"]!.ToString().Split("_")[1],
 				ProductType: x["productType"]!.ToString(),
 				Status: x["status"]!.ToString(),
-				OrderTime: DateTimeOffset.Parse(x["orderTime"]!.ToString(), null, DateTimeStyles.AssumeUniversal),
-				ModifyDate: DateTimeOffset.Parse(x["modifyDate"]!.ToString(), null, DateTimeStyles.AssumeUniversal),
-				SettleTime: DateTimeOffset.Parse(x["settleTime"]!.ToString(), null, DateTimeStyles.AssumeUniversal),
-				WinLostDate: DateTimeOffset.Parse(x["winLostDate"]!.ToString(), null, DateTimeStyles.AssumeUniversal),
+				OrderTime: x["orderTime"]!.ToString().StringConvertToDatetime(),
+				ModifyDate: x["modifyDate"]!.ToString().StringConvertToDatetime(),
+				SettleTime: x["settleTime"]!.ToString().StringConvertToDatetime(),
+				WinLostDate: x["winLostDate"]!.ToString().StringConvertToDatetime(),
 				Bet: decimal.Parse(x["stake"]!.ToString()),
 				ValidBet: decimal.Parse(x["actualStake"]!.ToString()),
 				Turnover: decimal.Parse(x["turnover"]!.ToString()),
@@ -470,7 +437,7 @@ internal class GameApiClient : IGameApiClient
 			.HandleResult<JsonNode>(r => r["error"]!["id"]!.GetValue<int>() == 9720)
 			.WaitAndRetryAsync(1,
 			retryAttempt => TimeSpan.FromSeconds(5),
-			(response, retryTime, context) => _logger.LogWarning("Response:{response}", JsonSerializer.Serialize(response)));
+			(response, retryTime, context) => logger.LogWarning("Response:{response}", JsonSerializer.Serialize(response)));
 
 		var jsonNode = await retryPolicy.ExecuteAsync(async ()
 			=> await PostAsync(
@@ -499,7 +466,7 @@ internal class GameApiClient : IGameApiClient
 		_ = request.TryAdd("ServerId", "game-sbo");
 
 		var content = new StringContent(request.ToJsonString(), Encoding.UTF8, MediaTypeNames.Application.Json);
-		var httpResponseMessage = await _httpClient
+		var httpResponseMessage = await httpClient
 		.PostAsync(
 			apiUrl,
 			content,
@@ -531,7 +498,7 @@ internal class GameApiClient : IGameApiClient
 			RecordedOn = DateTimeOffset.UtcNow
 		};
 
-		_logger.LogInformation("{JsonSerializer.Serialize(apiLogEvent)}", JsonSerializer.Serialize(apiLogEvent));
+		logger.LogInformation("{JsonSerializer.Serialize(apiLogEvent)}", JsonSerializer.Serialize(apiLogEvent));
 
 		_ = httpResponseMessage.EnsureSuccessStatusCode();
 
