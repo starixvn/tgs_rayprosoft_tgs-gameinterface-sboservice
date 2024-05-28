@@ -22,7 +22,7 @@ public interface IGameApiClient
 
 	ValueTask LogoutAsync(Uri apiUrl, string companyKey, string username, CancellationToken cancellationToken = default);
 
-	IAsyncEnumerable<BetBySeamlessGameResponse> GetBetListByModifyDateAgentBySportsBookAsync(Uri apiUrl, string companyKey, string agent, DateTimeOffset startTime, DateTimeOffset endTime, CancellationToken cancellationToken = default);
+	IAsyncEnumerable<BetBySportsBookResponse> GetBetListByModifyDateAgentBySportsBookAsync(Uri apiUrl, string companyKey, string agent, DateTimeOffset startTime, DateTimeOffset endTime, CancellationToken cancellationToken = default);
 
 	IAsyncEnumerable<BetByVirtualSportsResponse> GetBetListByModifyDateAgentByVirtualSportsAsync(Uri apiUrl, string companyKey, string agent, DateTimeOffset startTime, DateTimeOffset endTime, CancellationToken cancellationToken = default);
 

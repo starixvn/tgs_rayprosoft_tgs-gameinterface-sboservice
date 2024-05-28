@@ -1,16 +1,16 @@
 ﻿namespace Tgs.GameInterface.SBOService.Core.Models;
 
 public record BetBySeamlessGameResponse(
+	string ExternalRoundId,
 	string ExternalWagerId,
+	string GameType,
 	string PlayerCode,
-	string SportsType,
 	string Status,
 	DateTimeOffset OrderTime,
 	DateTimeOffset ModifyDate,
 	DateTimeOffset SettleTime,
 	DateTimeOffset WinLostDate,
 	decimal Bet,
-	decimal ValidBet,
 	decimal Turnover,
-	decimal PlayerWinLoss,
+	decimal WinLoss,
 	string AdditionalData);
