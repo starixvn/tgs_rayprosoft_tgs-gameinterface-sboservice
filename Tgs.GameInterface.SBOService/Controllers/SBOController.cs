@@ -382,6 +382,67 @@ public class SBOController : ControllerBase
 	}
 
 	/// <summary>
+	/// Games the wager by seamless game asynchronous.
+	/// </summary>
+	/// <param name="service">The service.</param>
+	/// <param name="source">The source.</param>
+	/// <returns></returns>
+	/// <remarks>
+	/// <b>Example</b><br />
+	///
+	///     Post
+	///
+	///         {
+	///             "apiUrl": "https://ex-api-demo-yy.568win.com",
+	///             "companyKey": "49ED28A987624CA0A3F834C3B8A69AAB",
+	///             "agent": "STAG_GPI_CNY",
+	///             "startTime": "2022-09-22T16:30:00+08:00",
+	///             "endTime": "2022-09-22T17:00:00+08:00"
+	///         }
+	/// </remarks>
+	[HttpPost("game/wager/seamlessgame", Name = "GameWagerBySeamlessGame")]
+	public async IAsyncEnumerable<GameWagerResultViewModel> GameWagerBySeamlessGameAsync(
+		[FromServices] IQueryService<GameWagerBySeamlessGameQuery, GameWagerResult> service,
+		GameWagerViewModel source)
+	{
+		var query = new GameWagerBySeamlessGameQuery(
+			source.ApiUrl,
+			source.CompanyKey,
+			source.Agent,
+			source.StartTime,
+			source.EndTime);
+
+		var gameWagers = await service.QueryAsync(
+			query: query,
+			cancellationToken: HttpContext.RequestAborted)
+			.ToArrayAsync(
+			cancellationToken: HttpContext.RequestAborted)
+			.ConfigureAwait(false);
+
+		if (gameWagers.Length == 0)
+		{
+			yield break;
+		}
+
+		foreach (var gameWager in gameWagers)
+		{
+			yield return new GameWagerResultViewModel(
+				gameWager.PlayerCode,
+				gameWager.ExternalWagerId,
+				gameWager.ExternalGameId,
+				(GameHistoryStatus)Enum.Parse(typeof(GameHistoryStatus), gameWager.Status, true),
+				gameWager.ExternalCreatedOn,
+				gameWager.ExternalClosedOn,
+				gameWager.Bet,
+				gameWager.ValidBet,
+				gameWager.PlayerWinLoss,
+				gameWager.Turnover,
+				gameWager.Settle,
+				gameWager.AdditionalData);
+		}
+	}
+
+	/// <summary>
 	/// Players the create asynchronous.
 	/// </summary>
 	/// <param name="service">The service.</param>

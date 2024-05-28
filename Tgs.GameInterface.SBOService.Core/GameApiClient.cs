@@ -39,11 +39,7 @@ internal class GameApiClient : IGameApiClient
 		};
 	}
 
-	public async ValueTask<bool> CheckTransactionStatusAsync(
-		Uri apiUrl,
-		string companyKey,
-		string txnId,
-		CancellationToken cancellationToken = default)
+	public async ValueTask<bool> CheckTransactionStatusAsync(Uri apiUrl, string companyKey, string txnId, CancellationToken cancellationToken = default)
 	{
 		var url = new Uri(apiUrl, "/web-root/restricted/player/check-transaction-status.aspx");
 
@@ -67,13 +63,7 @@ internal class GameApiClient : IGameApiClient
 			: true;
 	}
 
-	public async ValueTask<TransactionResponse> DepositAsync(
-		Uri apiUrl,
-		string companyKey,
-		string username,
-		string txnId,
-		decimal amount,
-		CancellationToken cancellationToken = default)
+	public async ValueTask<TransactionResponse> DepositAsync(Uri apiUrl, string companyKey, string username, string txnId, decimal amount, CancellationToken cancellationToken = default)
 	{
 		var url = new Uri(apiUrl, "/web-root/restricted/player/deposit.aspx");
 
@@ -101,13 +91,67 @@ internal class GameApiClient : IGameApiClient
 				Resp: jsonNode.ToJsonString());
 	}
 
-	public async IAsyncEnumerable<BetBySportsBookResponse> GetBetListByModifyDateAgentBySportsBookAsync(
-		Uri apiUrl,
-		string companyKey,
-		string agent,
-		DateTimeOffset startTime,
-		DateTimeOffset endTime,
-		[EnumeratorCancellation] CancellationToken cancellationToken = default)
+	public async IAsyncEnumerable<BetBySeamlessGameResponse> GetBetListByModifyDateAgentBySeamlessGameAsync(Uri apiUrl, string companyKey, string agent, DateTimeOffset startTime, DateTimeOffset endTime, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+	{
+		var startTimeEastern = TimeZoneInfo.ConvertTime(startTime.ToUniversalTime(), _timeZone);
+		var endTimeEastern = TimeZoneInfo.ConvertTime(endTime.ToUniversalTime(), _timeZone);
+
+		var url = new Uri(apiUrl, "/web-root/restricted/report/get-bet-list-by-modify-date.aspx");
+
+		JsonObject request = new JsonObject
+		{
+			{ "CompanyKey", companyKey },
+			{ "Username", agent },
+			{ "Portfolio", "SeamlessGame" },
+			{ "StartDate", startTimeEastern.ToString("yyyy-MM-ddTHH:mm:ss.fffZ") },
+			{ "EndDate", endTimeEastern.ToString("yyyy-MM-ddTHH:mm:ss.fffZ") },
+			{ "Language","en" }
+		};
+
+		var jsonNode = await PostAsync(
+				url,
+				request,
+				"GetBetListByModifyDate",
+				cancellationToken)
+			.ConfigureAwait(false);
+
+		var id = jsonNode["error"]!["id"]!.GetValue<int>();
+
+		if (id is not 0)
+		{
+			throw new GameProvisioningErrorException(jsonNode["error"]!.ToJsonString());
+		}
+
+		var results = jsonNode["result"]!.AsArray();
+
+		if (results.Count == 0)
+		{
+			yield break;
+		}
+
+		var betTransactions = results.Select(x => new BetBySeamlessGameResponse(
+				ExternalWagerId: x!["refNo"]!.ToString(),
+				PlayerCode: x["username"]!.ToString().Split("_")[1],
+				SportsType: x["sportsType"]!.ToString(),
+				Status: x["status"]!.ToString(),
+				OrderTime: DateTimeOffset.Parse(x["orderTime"]!.ToString(), null, DateTimeStyles.AssumeUniversal),
+				ModifyDate: DateTimeOffset.Parse(x["modifyDate"]!.ToString(), null, DateTimeStyles.AssumeUniversal),
+				SettleTime: DateTimeOffset.Parse(x["settleTime"]!.ToString(), null, DateTimeStyles.AssumeUniversal),
+				WinLostDate: DateTimeOffset.Parse(x["winLostDate"]!.ToString(), null, DateTimeStyles.AssumeUniversal),
+				Bet: decimal.Parse(x["stake"]!.ToString()),
+				ValidBet: decimal.Parse(x["actualStake"]!.ToString()),
+				Turnover: decimal.Parse(x["turnover"]!.ToString()),
+				PlayerWinLoss: decimal.Parse(x["winLost"]!.ToString()),
+				AdditionalData: x.ToJsonString()
+			)) ?? [];
+
+		foreach (var betTransaction in betTransactions)
+		{
+			yield return betTransaction;
+		}
+	}
+
+	public async IAsyncEnumerable<BetBySeamlessGameResponse> GetBetListByModifyDateAgentBySportsBookAsync(Uri apiUrl, string companyKey, string agent, DateTimeOffset startTime, DateTimeOffset endTime, [EnumeratorCancellation] CancellationToken cancellationToken = default)
 	{
 		var startTimeEastern = TimeZoneInfo.ConvertTime(startTime.ToUniversalTime(), _timeZone);
 		var endTimeEastern = TimeZoneInfo.ConvertTime(endTime.ToUniversalTime(), _timeZone);
@@ -145,7 +189,7 @@ internal class GameApiClient : IGameApiClient
 			yield break;
 		}
 
-		var betTransactions = results.Select(x => new BetBySportsBookResponse(
+		var betTransactions = results.Select(x => new BetBySeamlessGameResponse(
 				ExternalWagerId: x!["refNo"]!.ToString(),
 				PlayerCode: x["username"]!.ToString().Split("_")[1],
 				SportsType: x["sportsType"]!.ToString(),
@@ -159,7 +203,7 @@ internal class GameApiClient : IGameApiClient
 				Turnover: decimal.Parse(x["turnover"]!.ToString()),
 				PlayerWinLoss: decimal.Parse(x["winLost"]!.ToString()),
 				AdditionalData: x.ToJsonString()
-			)) ?? Enumerable.Empty<BetBySportsBookResponse>();
+			)) ?? [];
 
 		foreach (var betTransaction in betTransactions)
 		{
@@ -167,13 +211,7 @@ internal class GameApiClient : IGameApiClient
 		}
 	}
 
-	public async IAsyncEnumerable<BetByVirtualSportsResponse> GetBetListByModifyDateAgentByVirtualSportsAsync(
-		Uri apiUrl,
-		string companyKey,
-		string agent,
-		DateTimeOffset startTime,
-		DateTimeOffset endTime,
-		[EnumeratorCancellation] CancellationToken cancellationToken = default)
+	public async IAsyncEnumerable<BetByVirtualSportsResponse> GetBetListByModifyDateAgentByVirtualSportsAsync(Uri apiUrl, string companyKey, string agent, DateTimeOffset startTime, DateTimeOffset endTime, [EnumeratorCancellation] CancellationToken cancellationToken = default)
 	{
 		var startTimeEastern = TimeZoneInfo.ConvertTime(startTime.ToUniversalTime(), _timeZone);
 		var endTimeEastern = TimeZoneInfo.ConvertTime(endTime.ToUniversalTime(), _timeZone);
@@ -225,7 +263,7 @@ internal class GameApiClient : IGameApiClient
 				Turnover: decimal.Parse(x["turnover"]!.ToString()),
 				PlayerWinLoss: decimal.Parse(x["winLost"]!.ToString()),
 				AdditionalData: x.ToJsonString()
-			)) ?? Enumerable.Empty<BetByVirtualSportsResponse>();
+			)) ?? [];
 
 		foreach (var betTransaction in betTransactions)
 		{
@@ -233,11 +271,7 @@ internal class GameApiClient : IGameApiClient
 		}
 	}
 
-	public async ValueTask<GetPlayerBalanceResponse> GetPlayerBalanceAsync(
-		Uri apiUrl,
-		string companyKey,
-		string username,
-		CancellationToken cancellationToken = default)
+	public async ValueTask<GetPlayerBalanceResponse> GetPlayerBalanceAsync(Uri apiUrl, string companyKey, string username, CancellationToken cancellationToken = default)
 	{
 		var url = new Uri(apiUrl, "/web-root/restricted/player/get-player-balance.aspx");
 
@@ -266,12 +300,7 @@ internal class GameApiClient : IGameApiClient
 			};
 	}
 
-	public async ValueTask<LoginResponse> LoginAsync(
-		Uri apiUrl,
-		string companyKey,
-		string username,
-		string portfolio,
-		CancellationToken cancellationToken = default)
+	public async ValueTask<LoginResponse> LoginAsync(Uri apiUrl, string companyKey, string username, string portfolio, CancellationToken cancellationToken = default)
 	{
 		var url = new Uri(apiUrl, "/web-root/restricted/player/login.aspx");
 
@@ -306,11 +335,7 @@ internal class GameApiClient : IGameApiClient
 			};
 	}
 
-	public async ValueTask LogoutAsync(
-		Uri apiUrl,
-		string companyKey,
-		string username,
-		CancellationToken cancellationToken = default)
+	public async ValueTask LogoutAsync(Uri apiUrl, string companyKey, string username, CancellationToken cancellationToken = default)
 	{
 		var url = new Uri(apiUrl, "/web-root/restricted/player/logout.aspx");
 
@@ -335,16 +360,7 @@ internal class GameApiClient : IGameApiClient
 		}
 	}
 
-	public async ValueTask RegisterAgentAsync(
-		Uri apiUrl,
-		string companyKey,
-		string agent,
-		string currency,
-		int min,
-		int max,
-		int maxPerMatch,
-		int casinoTableLimit,
-		CancellationToken cancellationToken = default)
+	public async ValueTask RegisterAgentAsync(Uri apiUrl, string companyKey, string agent, string currency, int min, int max, int maxPerMatch, int casinoTableLimit, CancellationToken cancellationToken = default)
 	{
 		var url = new Uri(apiUrl, "/web-root/restricted/agent/register-agent.aspx");
 
@@ -375,12 +391,7 @@ internal class GameApiClient : IGameApiClient
 		}
 	}
 
-	public async ValueTask RegisterPlayerAsync(
-		Uri apiUrl,
-		string companyKey,
-		string username,
-		string agent,
-		CancellationToken cancellationToken = default)
+	public async ValueTask RegisterPlayerAsync(Uri apiUrl, string companyKey, string username, string agent, CancellationToken cancellationToken = default)
 	{
 		var url = new Uri(apiUrl, "/web-root/restricted/player/register-player.aspx");
 
@@ -406,15 +417,7 @@ internal class GameApiClient : IGameApiClient
 		}
 	}
 
-	public async ValueTask<UpdateAgentPresetBetSettingsResponse> UpdateAgentPresetBetSettingsAsync(
-		Uri apiUrl,
-		string companyKey,
-		string agent,
-		int min,
-		int max,
-		int maxPerMatch,
-		int casinoTableLimit,
-		CancellationToken cancellationToken = default)
+	public async ValueTask<UpdateAgentPresetBetSettingsResponse> UpdateAgentPresetBetSettingsAsync(Uri apiUrl, string companyKey, string agent, int min, int max, int maxPerMatch, int casinoTableLimit, CancellationToken cancellationToken = default)
 	{
 		var url = new Uri(apiUrl, "/web-root/restricted/agent/update-agent-preset-bet-settings.aspx");
 
@@ -450,14 +453,7 @@ internal class GameApiClient : IGameApiClient
 			};
 	}
 
-	public async ValueTask<TransactionResponse> WithdrawAsync(
-		Uri apiUrl,
-		string companyKey,
-		string username,
-		string txnId,
-		decimal amount,
-		bool isFullAmount,
-		CancellationToken cancellationToken = default)
+	public async ValueTask<TransactionResponse> WithdrawAsync(Uri apiUrl, string companyKey, string username, string txnId, decimal amount, bool isFullAmount, CancellationToken cancellationToken = default)
 	{
 		var url = new Uri(apiUrl, "/web-root/restricted/player/withdraw.aspx");
 
@@ -494,11 +490,7 @@ internal class GameApiClient : IGameApiClient
 				Resp: jsonNode.ToJsonString());
 	}
 
-	private async ValueTask<JsonNode> PostAsync(
-		Uri apiUrl,
-		JsonObject request,
-		string action,
-		CancellationToken cancellationToken = default)
+	private async ValueTask<JsonNode> PostAsync(Uri apiUrl, JsonObject request, string action, CancellationToken cancellationToken = default)
 	{
 		var logPrefix = $"{nameof(GameApiClient)}.{action}".ToLower();
 
