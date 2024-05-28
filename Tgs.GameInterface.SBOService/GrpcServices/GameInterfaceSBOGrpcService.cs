@@ -15,6 +15,7 @@ public class GameInterfaceSBOGrpcService(
 	IGetService<FundStatusQuery, bool> fundStatusService,
 	IGetService<GameUrlBySportsBookQuery, GameUrlResult> gameUrlBySportsBookService,
 	IGetService<GameUrlByVirtualSportsQuery, GameUrlResult> gameUrlByVirtualSportsService,
+	IQueryService<GameRecordBySeamlessGameQuery, GameRecordBySeamlessGameResult> gameRecordBySeamlessGameService,
 	IQueryService<GameWagerBySportsBookQuery, GameWagerResult> gameWagerBySportsBookService,
 	IQueryService<GameWagerByVirtualSportsQuery, GameWagerResult> gameWagerByVirtualSportsService,
 	IGetService<PlayerBalanceQuery, PlayerBalanceResult> playerBalanceService,
@@ -327,5 +328,49 @@ public class GameInterfaceSBOGrpcService(
 		{
 			Status = true
 		};
+	}
+
+	public override async Task<GameRecordBySeamlessGameReply> GameRecordBySeamlessGame(GameRecordRequest request, ServerCallContext context)
+	{
+		var query = new GameRecordBySeamlessGameQuery(
+			ApiUrl: new(request.ApiUrl),
+			CompanyKey: request.CompanyKey,
+			Agent: request.Agent,
+			StartTime: request.StartTime.ToDateTimeOffset(),
+			EndTime: request.EndTime.ToDateTimeOffset());
+
+		var gameWagers = await gameRecordBySeamlessGameService.QueryAsync(
+			query: query,
+			cancellationToken: context.CancellationToken)
+			.ToArrayAsync(
+			cancellationToken: context.CancellationToken)
+			.ConfigureAwait(false)
+			?? Enumerable.Empty<GameRecordBySeamlessGameResult>();
+
+		var reply = new GameRecordBySeamlessGameReply();
+
+		if (gameWagers.Any())
+		{
+			foreach (var gameWager in gameWagers)
+			{
+				reply.Items.Add(new GameRecordBySeamlessGameInfo()
+				{
+					PlayerCode = gameWager.PlayerCode,
+					ExternalRoundId = gameWager.ExternalRoundId,
+					ExternalWagerId = gameWager.ExternalWagerId,
+					ExternalGameId = gameWager.ExternalGameId,
+					ExternalCreatedOn = gameWager.ExternalCreatedOn.ToTimestamp(),
+					ExternalClosedOn = gameWager.ExternalClosedOn.ToTimestamp(),
+					Status = (GameHistoryStatus)Enum.Parse(typeof(GameHistoryStatus), gameWager.Status, true),
+					Bet = gameWager.Bet,
+					Settle = gameWager.Settle,
+					Turnover = gameWager.Turnover,
+					WinLoss = gameWager.WinLoss,
+					AdditionalData = gameWager.AdditionalData
+				});
+			}
+		}
+
+		return reply;
 	}
 }

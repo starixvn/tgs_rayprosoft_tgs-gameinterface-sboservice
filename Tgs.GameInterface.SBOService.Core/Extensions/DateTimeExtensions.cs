@@ -1,4 +1,5 @@
 ﻿namespace Tgs.GameInterface.SBOService.Core.Extensions;
+
 public static class DateTimeExtensions
 {
 	private static TimeZoneInfo TimeZone => TimeZoneInfo.CreateCustomTimeZone(id: "GMT-4", baseUtcOffset: TimeSpan.FromHours(-4), "GMT-4", "GMT-4");

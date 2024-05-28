@@ -3,10 +3,10 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.GameInterface.SBOService.Core.ApplicationServices;
 
-internal class GameWagerBySeamlessGameQueryService(IGameApiClient client) : IQueryService<GameWagerBySeamlessGameQuery, GameWagerResult>
+internal class GameRecordBySeamlessGameQueryService(IGameApiClient client) : IQueryService<GameRecordBySeamlessGameQuery, GameRecordBySeamlessGameResult>
 {
-	public async IAsyncEnumerable<GameWagerResult> QueryAsync(
-		GameWagerBySeamlessGameQuery query,
+	public async IAsyncEnumerable<GameRecordBySeamlessGameResult> QueryAsync(
+		GameRecordBySeamlessGameQuery query,
 		[EnumeratorCancellation] CancellationToken cancellationToken = default)
 	{
 		var responses = await client.GetBetListByModifyDateAgentBySeamlessGameAsync(
@@ -40,27 +40,27 @@ internal class GameWagerBySeamlessGameQueryService(IGameApiClient client) : IQue
 			x.Status.Equals("lose", StringComparison.OrdinalIgnoreCase) ||
 			x.Status.Equals("won", StringComparison.OrdinalIgnoreCase) ||
 			x.Status.Equals("void", StringComparison.OrdinalIgnoreCase))
-			.Select(x => new GameWagerResult(
+			.Select(x => new GameRecordBySeamlessGameResult(
 				PlayerCode: x.PlayerCode,
+				ExternalRoundId: x.ExternalRoundId,
 				ExternalWagerId: x.ExternalWagerId,
 				ExternalGameId: x.GameType,
-				Status: x.Status,
 				ExternalCreatedOn: x.OrderTime,
 				ExternalClosedOn: x.SettleTime,
+				Status: x.Status,
 				Bet: x.Bet,
-				ValidBet: x.Turnover,
-				PlayerWinLoss: x.Status switch
-				{
-					var status when status.Equals("running", StringComparison.OrdinalIgnoreCase) => 0,
-					var status when status.Equals("void", StringComparison.OrdinalIgnoreCase) => 0,
-					_ => x.WinLoss
-				},
-				Turnover: x.Turnover,
 				Settle: x.Status switch
 				{
 					var status when status.Equals("running", StringComparison.OrdinalIgnoreCase) => 0,
 					var status when status.Equals("void", StringComparison.OrdinalIgnoreCase) => x.WinLoss,
 					_ => x.WinLoss + x.Turnover
+				},
+				Turnover: x.Turnover,
+				WinLoss: x.Status switch
+				{
+					var status when status.Equals("running", StringComparison.OrdinalIgnoreCase) => 0,
+					var status when status.Equals("void", StringComparison.OrdinalIgnoreCase) => 0,
+					_ => x.WinLoss
 				},
 				AdditionalData: x.AdditionalData))
 			.AsQueryable();

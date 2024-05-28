@@ -401,44 +401,32 @@ public class SBOController : ControllerBase
 	///         }
 	/// </remarks>
 	[HttpPost("game/wager/seamlessgame", Name = "GameWagerBySeamlessGame")]
-	public async IAsyncEnumerable<GameWagerResultViewModel> GameWagerBySeamlessGameAsync(
-		[FromServices] IQueryService<GameWagerBySeamlessGameQuery, GameWagerResult> service,
+	public async IAsyncEnumerable<GameRecordBySeamlessGameResult> GameWagerBySeamlessGameAsync(
+		[FromServices] IQueryService<GameRecordBySeamlessGameQuery, GameRecordBySeamlessGameResult> service,
 		GameWagerViewModel source)
 	{
-		var query = new GameWagerBySeamlessGameQuery(
+		var query = new GameRecordBySeamlessGameQuery(
 			source.ApiUrl,
 			source.CompanyKey,
 			source.Agent,
 			source.StartTime,
 			source.EndTime);
 
-		var gameWagers = await service.QueryAsync(
+		var gameRecords = await service.QueryAsync(
 			query: query,
 			cancellationToken: HttpContext.RequestAborted)
 			.ToArrayAsync(
 			cancellationToken: HttpContext.RequestAborted)
 			.ConfigureAwait(false);
 
-		if (gameWagers.Length == 0)
+		if (gameRecords.Length == 0)
 		{
 			yield break;
 		}
 
-		foreach (var gameWager in gameWagers)
+		foreach (var gameRecord in gameRecords)
 		{
-			yield return new GameWagerResultViewModel(
-				gameWager.PlayerCode,
-				gameWager.ExternalWagerId,
-				gameWager.ExternalGameId,
-				(GameHistoryStatus)Enum.Parse(typeof(GameHistoryStatus), gameWager.Status, true),
-				gameWager.ExternalCreatedOn,
-				gameWager.ExternalClosedOn,
-				gameWager.Bet,
-				gameWager.ValidBet,
-				gameWager.PlayerWinLoss,
-				gameWager.Turnover,
-				gameWager.Settle,
-				gameWager.AdditionalData);
+			yield return gameRecord;
 		}
 	}
 
