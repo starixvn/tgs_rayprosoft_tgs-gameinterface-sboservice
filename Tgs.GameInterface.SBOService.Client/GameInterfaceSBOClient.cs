@@ -234,4 +234,31 @@ internal class GameInterfaceSBOClient(
 			cancellationToken: cancellationToken)
 			.ConfigureAwait(false);
 	}
+
+	public async IAsyncEnumerable<GameRecordBySeamlessGameInfo> GameRecordBySeamlessGameAsync(Uri apiUrl, string companyKey, string agent, DateTimeOffset startTime, DateTimeOffset endTime, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+	{
+		var request = new GameRecordRequest()
+		{
+			ApiUrl = apiUrl.ToString(),
+			CompanyKey = companyKey,
+			Agent = agent,
+			StartTime = startTime.ToTimestamp(),
+			EndTime = endTime.ToTimestamp()
+		};
+
+		var reply = await client.GameRecordBySeamlessGameAsync(
+			request: request,
+			cancellationToken: cancellationToken)
+			.ConfigureAwait(false);
+
+		if (reply.Items.Count == 0)
+		{
+			yield break;
+		}
+
+		foreach (var item in reply.Items)
+		{
+			yield return item;
+		}
+	}
 }

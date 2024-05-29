@@ -27,4 +27,6 @@ public interface IGameInterfaceSBOClient
 	IAsyncEnumerable<GameWagerInfo> GameWagerBySportsBookAsync(Uri apiUrl, string companyKey, string agent, DateTimeOffset startTime, DateTimeOffset endTime, CancellationToken cancellationToken = default);
 
 	IAsyncEnumerable<GameWagerInfo> GameWagerByVirtualSportsAsync(Uri apiUrl, string companyKey, string agent, DateTimeOffset startTime, DateTimeOffset endTime, CancellationToken cancellationToken = default);
+
+	IAsyncEnumerable<GameRecordBySeamlessGameInfo> GameRecordBySeamlessGameAsync(Uri apiUrl, string companyKey, string agent, DateTimeOffset startTime, DateTimeOffset endTime, CancellationToken cancellationToken = default);
 }

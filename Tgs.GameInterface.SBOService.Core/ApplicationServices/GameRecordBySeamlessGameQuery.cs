@@ -1,6 +1,6 @@
 ﻿namespace Tgs.GameInterface.SBOService.Core.ApplicationServices;
 
-public record GameWagerBySeamlessGameQuery(
+public record GameRecordBySeamlessGameQuery(
 	Uri ApiUrl,
 	string CompanyKey,
 	string Agent,
