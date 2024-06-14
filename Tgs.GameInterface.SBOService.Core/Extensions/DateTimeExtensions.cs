@@ -6,7 +6,7 @@ public static class DateTimeExtensions
 
 	public static string DatetimeConvertToString(this DateTimeOffset date)
 	{
-		return TimeZoneInfo.ConvertTime(date.ToUniversalTime(), TimeZone).UtcDateTime.ToString("yyyy-MM-ddTHH:mm:ssZ");
+		return TimeZoneInfo.ConvertTime(date.ToUniversalTime(), TimeZone).ToString("yyyy-MM-ddTHH:mm:ssZ");
 	}
 
 	public static DateTimeOffset StringConvertToDatetime(this string str)
