@@ -5,7 +5,7 @@ import "google/protobuf/timestamp.proto";
 
 option csharp_namespace = "Tgs.GameInterface.SBOService.Protos";
 
-package gameinterfacesbo;
+package GameInterfaceSBO;
 
 // The greeting service definition.
 service GameInterfaceSBO {
