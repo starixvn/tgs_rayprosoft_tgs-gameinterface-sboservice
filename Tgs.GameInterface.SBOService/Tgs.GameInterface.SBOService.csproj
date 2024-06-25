@@ -15,10 +15,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<None Remove="Protos\gameinterfacesbo.proto" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<PackageReference Include="FluentdForward.OpenTelemetry.MessagePack" Version="0.3.8" />
 		<PackageReference Include="Grpc.AspNetCore" Version="2.63.0" />
 		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.20.1" />
@@ -39,10 +35,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Tgs.GameInterface.SBOService.Core\Tgs.GameInterface.SBOService.Core.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Protobuf Include="Protos\gameinterfacesbo.proto" GrpcServices="Both" />
+		<ProjectReference Include="..\Tgs.GameInterface.SBOService.Protos\Tgs.GameInterface.SBOService.Protos.csproj" />
 	</ItemGroup>
 
 </Project>
